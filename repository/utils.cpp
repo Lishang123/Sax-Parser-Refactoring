@@ -84,21 +84,36 @@ void missingAttribute( std::string_view element, std::string_view attribute,
 
 std::string toLower( std::string_view str )
 {
-    if( str == "ID" )
-    {
-        return "id"; //wouldn't make sense to make it iD
+    if (str.empty()) {
+        fatal("lm::invalid_argument", "utils::toLower: input must not be empty");
     }
-    std::string lowerCaseStr { str };
-    lowerCaseStr.at(0) = tolower(lowerCaseStr.at(0));
-    for( int i = 1; i < lowerCaseStr.size(); i++ )
+
+    std::string s { str };
+
+    // Cast every char to unsigned char to avoid undefined behavior.
+    auto toLowerChar = [](char c) {
+        return static_cast<char>(std::tolower(static_cast<unsigned char>(c)));
+    };
+    auto isUpper = [](char c) {
+        return std::isupper(static_cast<unsigned char>(c)) != 0;
+    };
+    auto isLower = [](char c) {
+        return std::islower(static_cast<unsigned char>(c)) != 0;
+    };
+
+    // Lowercase first character
+    s[0] = toLowerChar(s[0]);
+
+    for (std::size_t i = 1; i < s.size(); ++i)
     {
-        if( isupper( lowerCaseStr.at(i) ) && islower( lowerCaseStr.at(i+1) ) )
-        {
+        // Check if i+1 exists
+        if (i + 1 < s.size() && isUpper(s[i]) && isLower(s[i + 1]))
             break;
-        }
-        lowerCaseStr.at(i) = tolower( lowerCaseStr.at(i) );
+
+        s[i] = toLowerChar(s[i]);
     }
-    return lowerCaseStr;
+
+    return s;
 }
 
 } // namespace utils
