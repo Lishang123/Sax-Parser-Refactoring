@@ -29,12 +29,14 @@ ST_String::ST_String( std::string_view sv )
 }
 
 ST_String::ST_String( const char* String)
-    : m_String( duplicate( String, strlen(String) + 1) )
+    : m_String( String ? duplicate( String, strlen(String) + 1) : nullptr )
 {
 }
 
-ST_String::ST_String( const ST_String& String)
-    : m_String(duplicate( String.m_String , strlen(String.m_String) + 1 ))
+ST_String::ST_String(const ST_String& String)
+	: m_String(String.m_String
+		? duplicate(String.m_String, std::strlen(String.m_String) + 1)
+		: nullptr)
 {
 }
 
