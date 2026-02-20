@@ -154,3 +154,27 @@ TEST_CASE("FUSimpleReader rejects unexpected elements while expecting Function",
     }
 }
 
+TEST_CASE("FUSimpleReader rejects unexpected elements while expecting ID/Source", "[repository][simple]") {
+    ensure_xerces();
+
+    const char* xml =
+        R"(<?xml version="1.0" encoding="UTF-8"?>
+           <Functions>
+             <Function>
+                <Function>stringLength...f2128203875h-1761480648.5_1</Function>
+                <Source>0.1</Source>
+            </Function>
+           </Functions>)";
+
+    TY_Blob blob(xml, std::strlen(xml));
+
+    try {
+        (void)spl::readRepo(blob, "unexpected-elem-test");
+        FAIL("Expected M_SystemMessage to be thrown");
+    } catch (const M_SystemMessage& msg) {
+        std::cout << msg.getDescription() << std::endl;
+        CHECK(std::string(msg.getCode()) == "lm::unexpected_element");
+        CHECK(std::string(msg.getDescription()).starts_with("Expected one of ['ID', 'Source']"));
+    }
+}
+
