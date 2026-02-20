@@ -30,6 +30,25 @@ void unexpectedChild( std::string_view got, std::string_view repo );
 void missingAttribute( std::string_view element, std::string_view attribute,
                        std::string_view repo );
 
+/**
+ * Converts the leading uppercase prefix of a string to lowercase.
+ *
+ * This function lowercases:
+ *  - the first character of the string, and
+ *  - any subsequent consecutive uppercase characters,
+ *    until an uppercase character is followed by a lowercase character.
+ *
+ * Examples:
+ *   "ID"           -> "id"
+ *   "URLValue"     -> "urlValue"
+ *   "HTTPRequest"  -> "httpRequest"
+ *   "A"            -> "a"
+ *   "functioN"    -> "function"
+ *
+ * @param str The input string.
+ * @return A new string with the leading uppercase prefix converted to lowercase.
+ * @pre str must not be empty.
+ */
 std::string lowercaseUntilCamelBoundary( std::string_view str );
 
 } // namespace utils
