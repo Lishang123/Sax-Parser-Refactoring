@@ -5,7 +5,11 @@
 #include "Memory.hpp"
 
 #include <iostream>
+#ifdef __APPLE__
+#include <stdlib.h>
+#else
 #include <malloc.h>
+#endif
 #include <memory.h>
 #include <new>
 
