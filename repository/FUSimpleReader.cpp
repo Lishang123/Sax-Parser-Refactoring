@@ -171,8 +171,14 @@ bool Reader::charactersChar( const char *, const char *, const char *, const cha
     auto currentElement = m_elementStack.back();
     if( currentElement == Element::id )
     {
-        if (auto it = std::ranges::find_if(m_functions,
-                                           [&chars](auto function) { return !strcmp(chars, function.id.c_str()); });
+        // Checks duplicate IDs against all previously read functions.
+        // 'function' is copied for each call but only used as a const reference;
+        // I will make it a const reference.
+        // TODO: There seems to be other issues in the copy constructor of ST_String.
+        if (auto it = std::ranges::find_if(
+                                            m_functions,
+                                           [&chars](const Function& function) { return !strcmp(chars, function.id.c_str()); }
+                                           );
                 it != m_functions.end())
         {
             utils::fatal(  "lm::duplicated_function_id",
