@@ -88,3 +88,23 @@ TEST_CASE("FUSimpleReader rejects duplicated function IDs", "[repository][simple
         CHECK(std::string(msg.getCode()) == "lm::duplicated_function_id");
     }
 }
+
+TEST_CASE("FUSimpleReader rejects unexpected elements", "[repository][simple]") {
+    ensure_xerces();
+
+    const char* xml =
+        R"(<?xml version="1.0" encoding="UTF-8"?>
+           <Functions>
+             <FunctionA><ID>dup</ID><Source>a</Source></FunctionA>
+             <FunctionB><ID>dup</ID><Source>b</Source></FunctionB>
+           </Functions>)";
+
+    TY_Blob blob(xml, std::strlen(xml));
+
+    try {
+        (void)spl::readRepo(blob, "unknown-elem-test");
+        FAIL("Expected M_SystemMessage to be thrown");
+    } catch (const M_SystemMessage& msg) {
+        CHECK(std::string(msg.getCode()) == "lm::unexpected_element");
+    }
+}
