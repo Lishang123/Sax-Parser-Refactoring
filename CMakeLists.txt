@@ -40,6 +40,13 @@ add_library(parser STATIC ${Sources})
 include(FetchContent)
 
 FetchContent_Declare(
+        Catch2
+        GIT_REPOSITORY https://github.com/catchorg/Catch2.git
+        GIT_TAG v3.5.0
+)
+FetchContent_MakeAvailable(Catch2)
+
+FetchContent_Declare(
         fmt
         GIT_REPOSITORY https://github.com/fmtlib/fmt.git
         GIT_TAG master
@@ -60,3 +67,9 @@ get_target_property(_inc_dir xerces-c INCLUDE_DIRECTORIES)
 target_include_directories(xerces-c SYSTEM BEFORE INTERFACE "$<BUILD_INTERFACE:${_inc_dir}>")
 
 target_link_libraries(parser PUBLIC xerces-c fmt::fmt)
+
+include(CTest)
+
+if (BUILD_TESTING)
+    add_subdirectory(tests)
+endif()
