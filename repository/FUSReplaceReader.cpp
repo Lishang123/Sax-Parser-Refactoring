@@ -55,7 +55,7 @@ void Reader::errorMessage(const M_SystemMessage &message)
 Reader::Element toElement( std::string_view name )
 {
     using Element = Reader::Element;
-    auto lowerCaseName = utils::toLower(name);
+    auto lowerCaseName = utils::lowercaseUntilCamelBoundary(name);
 
     #define X(x) {#x, Element::x}
     constexpr std::array<std::pair<std::string_view, Element>, static_cast<size_t>( Element::unknown ) - 1> lookup = { {

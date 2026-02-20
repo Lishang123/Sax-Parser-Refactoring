@@ -30,7 +30,7 @@ void unexpectedChild( std::string_view got, std::string_view repo );
 void missingAttribute( std::string_view element, std::string_view attribute,
                        std::string_view repo );
 
-std::string toLower( std::string_view str );
+std::string lowercaseUntilCamelBoundary( std::string_view str );
 
 } // namespace utils
 

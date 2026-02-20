@@ -82,7 +82,7 @@ void missingAttribute( std::string_view element, std::string_view attribute,
                         attribute, element, repo ) );
 }
 
-std::string toLower( std::string_view str )
+std::string lowercaseUntilCamelBoundary( std::string_view str )
 {
     if (str.empty()) {
         fatal("lm::invalid_argument", "utils::toLower: input must not be empty");
