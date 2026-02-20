@@ -89,14 +89,14 @@ TEST_CASE("FUSimpleReader rejects duplicated function IDs", "[repository][simple
     }
 }
 
-TEST_CASE("FUSimpleReader rejects unexpected elements", "[repository][simple]") {
+TEST_CASE("FUSimpleReader rejects unknown elements", "[repository][simple]") {
     ensure_xerces();
 
     const char* xml =
         R"(<?xml version="1.0" encoding="UTF-8"?>
            <Functions>
-             <FunctionA><ID>dup</ID><Source>a</Source></FunctionA>
-             <FunctionB><ID>dup</ID><Source>b</Source></FunctionB>
+             <FunctionA><ID>stringLength...f2128203875h-1761480648.5_1</ID><Source>0.1</Source></FunctionA>
+             <FunctionB><ID>stringLength...f2128203875h-1761480648.6_1</ID><Source>1.1</Source></FunctionB>
            </Functions>)";
 
     TY_Blob blob(xml, std::strlen(xml));
@@ -106,5 +106,6 @@ TEST_CASE("FUSimpleReader rejects unexpected elements", "[repository][simple]") 
         FAIL("Expected M_SystemMessage to be thrown");
     } catch (const M_SystemMessage& msg) {
         CHECK(std::string(msg.getCode()) == "lm::unexpected_element");
+        CHECK(std::string(msg.getDescription()).starts_with("Found unexpected element 'FunctionA' while parsing"));
     }
 }
