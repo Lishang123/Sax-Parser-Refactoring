@@ -289,3 +289,25 @@ TEST_CASE("FUSimpleReader parses simple doc without function child", "[repositor
 
     REQUIRE(functions.empty());
 }
+
+TEST_CASE("FUSimpleReader preserves whitespaces", "[repository][simple]") {
+    ensure_xerces();
+
+    const char* xml =
+        R"(<?xml version="1.0" encoding="UTF-8"?>
+           <Functions>
+             <Function>
+                <ID>
+                     dup
+                </ID>
+            </Function>
+           </Functions>)";
+
+    TY_Blob blob(xml, std::strlen(xml));
+
+    auto functions = spl::readRepo(blob, "test-preserve-whitespaces");
+    // The current implementation doesn't trim whitespaces for text content.
+    // Most parsers do trim the whitespaces. If this is the intended behavior is unknown.
+    REQUIRE(functions.size() == 1);
+    CHECK_FALSE(std::string(functions[0].id.c_str()) == "dup");
+}
