@@ -72,8 +72,9 @@ Reader::Element toElement( std::string_view name )
         X(source)
     }};
     #undef X
-    const auto it = std::find_if( lookup.begin(), lookup.end(),
-                                  [lowerCaseName]( auto x ){return !strcmp( lowerCaseName.c_str(), x.first.data() );});
+    // const auto it = std::ranges::find(lookup, lowerCaseName, &std::pair<std::string_view, Element>::first);
+    const auto it = std::ranges::find_if( lookup,
+                                   [&lowerCaseName]( const auto& x ){return lowerCaseName == x.first;});
     return it == lookup.end() ? Element::unknown : it->second;
 }
 
