@@ -139,24 +139,18 @@ void ST_String::set( const char* s, size_t len)
         reset();
         return;
     }
-	if( s && m_String)
+	if( len == npos )
 	{
-		if( len == npos )
-		{
-			len = strlen( s);
-		}
-
-		if( len <= length())
-		{
-			std::memcpy( m_String, s, len);
-			m_String[len] = '\0';
-			return;
-		}
+		len = strlen( s);
 	}
-    if( len == npos )
-    {
-        len = strlen( s );
-    }
+	// Try to reuse existing allocation if large enough.
+	if( m_String && len <= length())
+	{
+		std::memcpy( m_String, s, len);
+		m_String[len] = '\0';
+		return;
+	}
+	// Allocate new memory otherwise
 	consume( duplicate(s, len));
 }
 
