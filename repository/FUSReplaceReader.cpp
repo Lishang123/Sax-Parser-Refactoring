@@ -45,6 +45,20 @@ private:
     Function *m_currentFunction { nullptr };
     void errorMessage( const M_SystemMessage &message ) override;
     ST_String m_repository;
+
+    static constexpr std::string_view toString(Element e)
+    {
+        switch (e)
+        {
+            case Element::functions:   return functionsArrayElement;
+            case Element::function:    return functionElement;
+            case Element::id:          return IDElement;
+            case Element::source:      return sourceElement;
+            case Element::pattern:     return patternElement;
+            case Element::replacement: return replacementElement;
+            default:                   return "Unknown";
+        }
+    }
 };
 
 void Reader::errorMessage(const M_SystemMessage &message)
@@ -148,13 +162,19 @@ bool Reader::charactersChar( const char *, const char *, const char *, const cha
         m_currentFunction = &m_functions.back();
         m_currentFunction->id.set( chars );
     }
-    else if ( currentElement == Element::source )
-    {
-        m_currentFunction->source.set( chars );
-    }
-    else if( currentElement == Element::pattern )
-    {
-        m_currentFunction->pattern.set( chars );
+    else if (currentElement == Element::source
+        || currentElement == Element::pattern
+        || currentElement == Element::replacement) {
+        if (!m_currentFunction) {
+            utils::fatal("lm::other_function_child_before_id",
+                         fmt::format("Found <{}> before <ID> while parsing {}.", toString(currentElement), m_repository.c_str()));
+        }
+        if ( currentElement == Element::source )
+            m_currentFunction->source.set( chars );
+        else if( currentElement == Element::pattern )
+            m_currentFunction->pattern.set( chars );
+        else
+            m_currentFunction->replacement.set( chars );
     }
     else if( currentElement == Element::replacement )
     {
