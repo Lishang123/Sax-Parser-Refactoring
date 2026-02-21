@@ -13,6 +13,8 @@ using namespace M::Memory;
 
 using namespace M::String;
 
+static constexpr size_t npos = static_cast<size_t>(-1);
+
 ST_String::ST_String()
          : m_String( nullptr)
 {
@@ -120,7 +122,7 @@ void ST_String::consume( char* s)
 
 void ST_String::set( const char* s)
 {
-	set( s, -1);
+	set( s, npos);
 }
 
 void ST_String::set( std::string_view str )
@@ -139,7 +141,7 @@ void ST_String::set( const char* s, size_t len)
     }
 	if( s && m_String)
 	{
-		if( len == -1 )
+		if( len == npos )
 		{
 			len = strlen( s);
 		}
@@ -151,7 +153,7 @@ void ST_String::set( const char* s, size_t len)
 			return;
 		}
 	}
-    if( len == -1 )
+    if( len == npos )
     {
         len = strlen( s );
     }
