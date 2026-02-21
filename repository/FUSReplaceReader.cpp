@@ -83,7 +83,7 @@ Reader::Element toElement( std::string_view name )
     #undef X
 
     const auto it = std::ranges::find_if(lookup,
-                                         [&lowerCaseName](auto x) { return !strcmp(lowerCaseName.c_str(), x.first.data()); });
+                                         [&lowerCaseName](const auto& x) { return lowerCaseName == x.first; });
     return it == lookup.end() ? Element::unknown : it->second;
 }
 
