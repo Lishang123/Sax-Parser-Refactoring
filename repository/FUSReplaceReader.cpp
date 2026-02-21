@@ -167,7 +167,7 @@ bool Reader::charactersChar( const char *, const char *, const char *, const cha
         {
             utils::fatal(  "lm::duplicated_function_id", fmt::format( "Function with ID '{}' duplicated in {}.", chars, m_repository.c_str() ) );
         }
-        m_functions.emplace_back( Function() );
+        m_functions.emplace_back();
         m_currentFunction = &m_functions.back();
         m_currentFunction->id.set( chars );
     }
