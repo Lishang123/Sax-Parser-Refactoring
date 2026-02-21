@@ -21,11 +21,9 @@ constexpr const std::string_view replacementElement = "Replacement";
 class Reader : public XML_Parser
 {
 public:
-    bool startElementChar( const char *, const char *localName, const char *, const xercesc::Attributes & ) override;
-    bool charactersChar( const char *, const char *, const char *, const char *chars, const unsigned int ) override;
-    bool endElementChar( const char *, const char *, const char *) override;
-
     Functions read( const TY_Blob &data , std::string_view repo ) &&;
+
+private:
 
     enum class Element
     {
@@ -38,13 +36,17 @@ public:
         replacement,
         unknown
     };
+    static Element toElement(std::string_view name);
 
-private:
     Functions m_functions;
     std::vector<Element> m_elementStack;
     Function *m_currentFunction { nullptr };
-    void errorMessage( const M_SystemMessage &message ) override;
     ST_String m_repository;
+    void errorMessage( const M_SystemMessage &message ) override;
+
+    bool startElementChar( const char *, const char *localName, const char *, const xercesc::Attributes & ) override;
+    bool charactersChar( const char *, const char *, const char *, const char *chars, const unsigned int ) override;
+    bool endElementChar( const char *, const char *, const char *) override;
 
     static constexpr std::string_view toString(Element e)
     {
@@ -66,7 +68,7 @@ void Reader::errorMessage(const M_SystemMessage &message)
     throw message;
 }
 
-Reader::Element toElement( std::string_view name )
+Reader::Element Reader::toElement( std::string_view name )
 {
     using Element = Reader::Element;
     auto lowerCaseName = utils::lowercaseUntilCamelBoundary(name);

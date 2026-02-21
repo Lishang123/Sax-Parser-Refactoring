@@ -22,13 +22,9 @@ constexpr const std::string_view sourceElement = "Source";
 class Reader : public XML_Parser
 {
 public:
-    bool startElementChar( const char *, const char *localName, const char *, const xercesc::Attributes & ) override;
-    bool endElementChar( const char *, const char *, const char * ) override;
-    // character part of the current element.
-    bool charactersChar( const char *, const char *, const char *, const char *chars, const unsigned int ) override;
-
     Functions read ( const TY_Blob &data, std::string_view repo ) &&;
 
+private:
     enum class Element
     {
         document,
@@ -38,7 +34,8 @@ public:
         source,
         unknown
     };
-private:
+    static Element toElement(std::string_view name);
+
     Functions m_functions;
     // tracks the current position
     std::vector<Element> m_elementStack;
@@ -46,6 +43,11 @@ private:
     Function *m_currentFunction {nullptr};
     void errorMessage( const M_SystemMessage &message )override;
     ST_String m_repository;
+
+    bool startElementChar( const char *, const char *localName, const char *, const xercesc::Attributes & ) override;
+    bool endElementChar( const char *, const char *, const char * ) override;
+    bool charactersChar( const char *, const char *, const char *, const char *chars, const unsigned int ) override;
+
 };
 
 void Reader::errorMessage( const M_SystemMessage &message )
@@ -59,7 +61,7 @@ void Reader::errorMessage( const M_SystemMessage &message )
  * @param name: The name of the element.
  * @return: The element enum defined in the reader.
  */
-Reader::Element toElement( std::string_view name )
+Reader::Element Reader::toElement( std::string_view name )
 {
     using Element = Reader::Element;
     auto lowerCaseName = utils::lowercaseUntilCamelBoundary( name );
