@@ -25,3 +25,10 @@ TEST_CASE("ST_String: const char* string constructor with empty string", "[Strin
     CHECK(s.view().empty());
     CHECK(s.length() == 0);
 }
+
+TEST_CASE("ST_String: const char* string set", "[String][st_string]") {
+    const char* a = "hello";
+    ST_String b("");
+    b.set(a);
+    CHECK(b.view() == "hello");
+}
