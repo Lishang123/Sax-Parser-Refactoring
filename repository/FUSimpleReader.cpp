@@ -215,4 +215,4 @@ Functions readRepo( const TY_Blob &data, std::string_view repo )
     return Reader {}.read( data, repo );
 }
 
-}//namespace functions::repository::fus::simple
+}
