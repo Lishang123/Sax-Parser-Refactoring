@@ -130,7 +130,10 @@ bool Reader::startElementChar( const char *, const char *localName, const char *
         }
         case Element::function:
         {
-            if( currentElement < Element::id || currentElement > Element::replacement )
+            if (currentElement != Element::id &&
+                currentElement != Element::source &&
+                currentElement != Element::pattern &&
+                currentElement != Element::replacement)
             {
                 utils::unexpectedElement(  localName, m_repository.c_str() );
             }
