@@ -14,10 +14,10 @@ namespace functions::repository::simple
 namespace
 {
 
-constexpr const std::string_view functionsArrayElement = "Functions";
-constexpr const std::string_view functionElement = "Function";
-constexpr const std::string_view IDElement = "ID";
-constexpr const std::string_view sourceElement = "Source";
+constexpr std::string_view functionsArrayElement = "Functions";
+constexpr std::string_view functionElement = "Function";
+constexpr std::string_view IDElement = "ID";
+constexpr std::string_view sourceElement = "Source";
 
 class Reader : public XML_Parser
 {
