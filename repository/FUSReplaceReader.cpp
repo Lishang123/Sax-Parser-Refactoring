@@ -176,10 +176,6 @@ bool Reader::charactersChar( const char *, const char *, const char *, const cha
         else
             m_currentFunction->replacement.set( chars );
     }
-    else if( currentElement == Element::replacement )
-    {
-        m_currentFunction->replacement.set( chars );
-    }
     return true;
 }
 
