@@ -100,7 +100,7 @@ std::string_view ST_String::view() const noexcept
 
 bool ST_String::isEmpty() const
 {
-	return !m_String || !m_String[0];
+	return m_String == nullptr || m_String[0] == '\0';
 }
 
 size_t ST_String::length() const
