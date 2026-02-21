@@ -219,4 +219,32 @@ TEST_CASE("FUSReplaceReader: <Source> before <ID>", "[repository][replace]") {
     }
 }
 
+TEST_CASE("FUSReplaceReader parses doc with only ID as child of functions", "[repository][replace]") {
+    ensure_xerces();
+
+    const char* xml =
+        R"(<?xml version="1.0" encoding="UTF-8"?>
+           <Functions>
+             <Function>
+                <ID>stringLength...f2128203875h-1761480648.5_1</ID>
+            </Function>
+            <Function>
+                <ID>stringLength...f2128203875h-1761480648.6_1</ID>
+            </Function>
+            <Function>
+                <ID>stringLength...f2128203875h-1761480648.6_2</ID>
+            </Function>
+           </Functions>)";
+
+    TY_Blob blob(xml, std::strlen(xml));
+
+    auto functions = rpl::readRepo(blob, "test-simple-doc-no-source");
+
+    REQUIRE(functions.size() == 3);
+
+    CHECK(std::string(functions[0].id.c_str()) == "stringLength...f2128203875h-1761480648.5_1");
+    CHECK(std::string(functions[1].id.c_str()) == "stringLength...f2128203875h-1761480648.6_1");
+    CHECK(std::string(functions[2].id.c_str()) == "stringLength...f2128203875h-1761480648.6_2");
+}
+
 
