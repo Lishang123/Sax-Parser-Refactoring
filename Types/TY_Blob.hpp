@@ -60,50 +60,50 @@ class  TY_Blob final : public TY_Base
 		void append( const char* content, T_uint64 size);
 
 		/** Get content and size.
-		  * @param Content Store pointer to content here. May be NULL.
-		  * @param Size Store pointer to size of content here. May be NULL.
+		  * @param content Store pointer to content here. May be NULL.
+		  * @param size Store pointer to size of content here. May be NULL.
 		  */
 		void getContent( const char** content, T_uint64* size) const;
 		/** Get ownership of internal buffer. The blob will be empty but still usable afterwards.
 		  * Make sure to remove the buffer with M_Memory::release().
-		  * @param Content Store pointer to content here. May be NULL.
-		  * @param Size Store pointer to size of content here. May be NULL.
+		  * @param content Store pointer to content here. May be NULL.
+		  * @param size Store pointer to size of content here. May be NULL.
 		  */
 		void detachContent( char** content, T_uint64* size);
 		/** Get content by copying.
-		  * @param Buffer Copy content here.
-		  * @param Offset Start here to copy.
-		  * @param Size Copy this number of bytes.
+		  * @param buffer Copy content here.
+		  * @param offset Start here to copy.
+		  * @param size Copy this number of bytes.
 		  */
 		T_uint64 copyContent( char* buffer, T_uint64 offset, T_uint64 size) const;
 		/** Set new content. This makes a copy of the new content.
-		  * @param Content New content.
+		  * @param content New content.
 		  */
 		void setContent( const char* content);
 		/** Set new content. This makes a copy of the new content.
-		  * @param Content New content.
+		  * @param content New content.
 		  */
 		void setContent( const TY_Blob* content);
 		/** Set new content and size. This makes a copy of the new content. The terminating 0 will
 		  * not be copied.
-		  * @param Content New content.
-		  * @param Size Size of new content.
+		  * @param content New content.
+		  * @param size Size of new content.
 		  */
 		void setContent( const void* content, T_uint64 size);
 		void setContent( const char* content, T_uint64 size);
 		/** Set new content and size. This makes a copy of the new content if Consume is false.
 		  * Otherwise the ownership changes to this object. In that case, Content has to be
 		  * allocated via M::Memory.
-		  * @param Content New content.
-		  * @param Size Size of new content.
-		  * @param Consume Signals whether a copy should be made.
+		  * @param content New content.
+		  * @param size Size of new content.
+		  * @param consume Signals whether a copy should be made.
 		  */
 		void setContent( void* content, T_uint64 size, bool consume);
 
 		/** Get pointer to content, be aware that this buffer may not be 0-terminated! */
 		const char* getContent() const;
 		/** Set content size.
-		  * @param Size New content size.
+		  * @param size New content size.
 		  */
 		void setSize( T_uint64 size, char padding = ' ');
 		/** Get content size. */
