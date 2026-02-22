@@ -43,13 +43,10 @@ namespace M::Memory {
 
 	void* callocate( size_t Size, size_t Count)
 	{
-		void* Buffer = calloc( Count, Size);
-		if( !Buffer)
-		{
-			outOfMemoryHandler();
-		}
+		if(void* Buffer = calloc( Count, Size))
+			return Buffer;
 
-		return Buffer;
+		outOfMemoryHandler();
 	}
 
 	void* reAllocate( void* OldBuffer, size_t Size)
