@@ -25,8 +25,8 @@ void installOutOfMemoryHandler()
 
 void outOfMemoryHandler()
 {
-    std::cerr<<"Out of memory"<<std::endl;
-	exit( 2);
+    std::cerr<<"Out of memory\n";
+	throw std::bad_alloc();
 }
 
 void* allocate( size_t Size)
