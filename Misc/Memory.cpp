@@ -30,7 +30,7 @@ namespace M::Memory {
 	{
 		if(size == 0)
 		{
-			size = 1; //malloc can return nullptr if feeded with 0, so we avoid this false-positiv error
+			size = 1; //malloc can return nullptr if fed with 0, so we avoid this false positive error
 		}
 
 		if( void* Buffer = malloc( size))
