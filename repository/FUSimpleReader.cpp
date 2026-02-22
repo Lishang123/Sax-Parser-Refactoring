@@ -65,14 +65,12 @@ Reader::Element Reader::toElement( std::string_view name )
     using Element = Reader::Element;
     auto lowerCaseName = utils::lowercaseUntilCamelBoundary( name );
 
-    #define X(x) {#x, Element::x}
-    constexpr std::array<std::pair<std::string_view, Element>, static_cast<size_t>( Element::unknown ) - 1> lookup = {{
-        X(functions),
-        X(function),
-        X(id),
-        X(source)
+    static constexpr std::array<std::pair<std::string_view, Element>, 4> lookup{{
+        {"functions", Element::functions},
+        {"function",  Element::function},
+        {"id",        Element::id},
+        {"source",    Element::source},
     }};
-    #undef X
     // const auto it = std::ranges::find(lookup, lowerCaseName, &std::pair<std::string_view, Element>::first);
     const auto it = std::ranges::find_if( lookup,
                                    [&lowerCaseName]( const auto& x ){return lowerCaseName == x.first;});
