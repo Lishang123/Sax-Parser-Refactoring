@@ -5,6 +5,7 @@
 
 #include "FUSimpleReader.hpp"
 #include "../XML/XML_Parser.hpp"
+#include "specs/SimpleSpec.hpp"
 #include "utils.hpp"
 #include <array>
 #include <algorithm>
@@ -210,7 +211,9 @@ bool Reader::endElementChar( const char *, const char *, const char * )
 
 Functions readRepo( const TY_Blob &data, std::string_view repo )
 {
-    return Reader {}.read( data, repo );
+    // You can swap the reader used here.
+    // return Reader {}.read( data, repo );
+    return FUSReader<SimpleSpec>{}.read( data, repo );
 }
 
 }
