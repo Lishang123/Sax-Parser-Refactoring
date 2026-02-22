@@ -20,7 +20,7 @@ namespace M::Memory {
 		std::set_new_handler( outOfMemoryHandler );
 	}
 
-	void outOfMemoryHandler()
+	[[noreturn]] void outOfMemoryHandler()
 	{
 		std::cerr<<"Out of memory\n";
 		throw std::bad_alloc();

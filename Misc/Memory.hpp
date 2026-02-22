@@ -11,7 +11,7 @@
 
 namespace M::Memory
 {
-	 void outOfMemoryHandler();
+	 [[noreturn]] void outOfMemoryHandler();
 	 void* allocate( size_t Size);
 	 void* callocate( size_t Size, size_t Count);
 
