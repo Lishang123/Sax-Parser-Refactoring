@@ -87,7 +87,10 @@ namespace M::Memory
 	  */
 	 char* create( size_t length );
 
-	 void installOutOfMemoryHandler();
+     /**
+      * This handler only handles new failures.
+      */
+     void installOutOfMemoryHandler();
 
 } // namespace Memory
 } // namespace M
