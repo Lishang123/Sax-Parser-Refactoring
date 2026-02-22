@@ -108,16 +108,9 @@ namespace M::Memory {
 	char* duplicate( const char* Buffer, size_t Size)
 	{
 		if( !Buffer)
-		{
 			return nullptr;
-		}
 
 		char* Result = static_cast<char*>( allocate( Size + 1));
-
-		if( !Result)
-		{
-			return nullptr;
-		}
 
 		if( Size)
 		{
