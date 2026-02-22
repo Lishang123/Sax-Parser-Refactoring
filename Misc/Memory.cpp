@@ -52,27 +52,15 @@ namespace M::Memory {
 	void* reAllocate( void* OldBuffer, size_t Size)
 	{
 		if( !OldBuffer)
-		{
-			return( allocate( Size));
-		}
-
-		void* Buffer = nullptr;
+			return allocate( Size);
 
 		if( !Size)
-		{
 			Size = 1; //avoid false-positive error
-		}
 
-		if( !( Buffer = realloc( OldBuffer, Size)))
-		{
-			// realloc failed
-			outOfMemoryHandler();
-			return( nullptr);
-		}
-		else
-		{
-			return( Buffer);
-		}
+		if (void* Buffer = realloc( OldBuffer, Size))
+			return Buffer;
+		outOfMemoryHandler();
+
 	}
 
 	void release( void* OldBuffer)
