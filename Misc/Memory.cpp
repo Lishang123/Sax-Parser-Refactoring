@@ -65,11 +65,7 @@ namespace M::Memory {
 
 	void release( void* OldBuffer)
 	{
-		if( !OldBuffer)
-		{
-			return;
-		}
-
+		// free does nothing for nullptr
 		free( OldBuffer);
 	}
 
