@@ -240,7 +240,7 @@ void TY_Blob::setContent( void* content, T_uint64 size, bool consume)
 	}
 	else
 	{
-		m_content = duplicate( content, size);
+		m_content = duplicate( static_cast<const void*>(content), size);
 
 		if( !m_content)
 		{
