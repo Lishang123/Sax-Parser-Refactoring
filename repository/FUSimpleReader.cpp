@@ -45,7 +45,7 @@ private:
 
     bool startElementChar( const char *, const char *localName, const char *, const xercesc::Attributes & ) override;
     bool endElementChar( const char *, const char *, const char * ) override;
-    bool charactersChar( const char *, const char *, const char *, const char *chars, const unsigned int ) override;
+    bool charactersChar( const char *, const char *, const char *, const char *text, const unsigned int ) override;
 
 };
 
@@ -163,28 +163,29 @@ bool Reader::startElementChar( const char *, const char *localName, const char *
  * Handle character data inside <ID> and <Source> elements.
  * When parsing <ID>, a new Function object is created and its ID is set.
  * When parsing <Source>, the source text is assigned to the current Function.
- * @param chars
+ * @param text the text content. An empty string will be given if the content is empty.
  * @return true if build succeeds. Throws for duplicate function ids  lm::duplicated_function_id.
  */
-bool Reader::charactersChar( const char *, const char *, const char *, const char *chars, const unsigned int )
+bool Reader::charactersChar( const char *, const char *, const char *, const char *text, const unsigned int )
 {
     auto currentElement = m_elementStack.back();
     if( currentElement == Element::id )
     {
         // Checks duplicate IDs against all previously read functions.
         // Make 'function' a const reference.
+        // chars can never be nullptr, so as function.id.c_str() since it's copied from char*, so this comp is null-safe.
         if (auto it = std::ranges::find_if(
                                             m_functions,
-                                           [chars](const Function& function) { return !strcmp(chars, function.id.c_str()); }
+                                           [text](const Function& function) { return !strcmp(text, function.id.c_str()); }
                                            );
                 it != m_functions.end())
         {
             utils::fatal(  "lm::duplicated_function_id",
-                fmt::format( "Function with ID '{}' duplicated in {}.", chars, m_repository.c_str() ) );
+                fmt::format( "Function with ID '{}' duplicated in {}.", text, m_repository.c_str() ) );
         }
         m_functions.emplace_back();
         m_currentFuncIndex = m_functions.size() -1;
-        m_functions[*m_currentFuncIndex].id.set( chars );
+        m_functions[*m_currentFuncIndex].id.set( text );
     }
     else if( currentElement == Element::source )
     {
@@ -192,7 +193,7 @@ bool Reader::charactersChar( const char *, const char *, const char *, const cha
             utils::fatal("lm::source_before_id",
                          fmt::format("Found <Source> before <ID> while parsing {}.", m_repository.c_str()));
         }
-        m_functions[*m_currentFuncIndex].source.set( chars );
+        m_functions[*m_currentFuncIndex].source.set( text );
     }
     return true;
 }
