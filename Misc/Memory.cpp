@@ -5,11 +5,6 @@
 #include "Memory.hpp"
 
 #include <iostream>
-#ifdef __APPLE__
-#include <cstdlib>
-#else
-#include <malloc.h>
-#endif
 #include <memory.h>
 #include <new>
 
