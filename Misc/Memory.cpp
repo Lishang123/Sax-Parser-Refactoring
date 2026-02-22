@@ -53,7 +53,7 @@ void* allocate( size_t Size)
 
 void* callocate( size_t Size, size_t Count)
 {
-	void* Buffer = calloc( Size, Count);
+	void* Buffer = calloc( Count, Size);
 	if( !Buffer)
 	{
 		outOfMemoryHandler();
