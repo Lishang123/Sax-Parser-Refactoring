@@ -39,8 +39,7 @@ private:
     Functions m_functions;
     // tracks the current position
     std::vector<Element> m_elementStack;
-    // stores the current function being built, TODO: a raw pointer?
-    Function *m_currentFunction {nullptr};
+    std::optional<std::size_t> m_currentFuncIndex{};
     void errorMessage( const M_SystemMessage &message )override;
     ST_String m_repository;
 
@@ -104,6 +103,7 @@ Functions Reader::read( const TY_Blob &data, std::string_view repo ) &&
     It does not enforce order of <ID> vs <Source>. <br>
     It does not enforce that <Function> actually contains both fields. <br>
     It does not prevent multiple <Source> tags etc. <br>
+    FIXME?? It does not create the Function object when seeing Function.
  * @param localName the element name
  * @return true
  */
@@ -183,16 +183,16 @@ bool Reader::charactersChar( const char *, const char *, const char *, const cha
                 fmt::format( "Function with ID '{}' duplicated in {}.", chars, m_repository.c_str() ) );
         }
         m_functions.emplace_back();
-        m_currentFunction = &m_functions.back();
-        m_currentFunction->id.set( chars );
+        m_currentFuncIndex = m_functions.size() -1;
+        m_functions[*m_currentFuncIndex].id.set( chars );
     }
     else if( currentElement == Element::source )
     {
-        if (!m_currentFunction) {
+        if (!m_currentFuncIndex) {
             utils::fatal("lm::source_before_id",
                          fmt::format("Found <Source> before <ID> while parsing {}.", m_repository.c_str()));
         }
-        m_currentFunction->source.set( chars );
+        m_functions[*m_currentFuncIndex].source.set( chars );
     }
     return true;
 }
