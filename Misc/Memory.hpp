@@ -92,7 +92,7 @@ namespace M::Memory
       */
      void installOutOfMemoryHandler();
 
-} // namespace Memory
-} // namespace M
+} // namespace M::Memory
+
 
 #endif
