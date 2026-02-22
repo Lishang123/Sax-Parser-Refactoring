@@ -88,26 +88,6 @@ void* reAllocate( void* OldBuffer, size_t Size)
 	}
 }
 
-void* duplicate( const void* OldBuffer, size_t Size)
-{
-	if( !OldBuffer)
-	{
-		return( nullptr);
-	}
-
-	void* Result;
-
-	if(( Result = allocate( Size)))
-	{
-		if( Size)
-		{
-			memcpy( Result, OldBuffer, Size);
-		}
-	}
-
-	return( Result);
-}
-
 void release( void* OldBuffer)
 {
 	if( !OldBuffer)
