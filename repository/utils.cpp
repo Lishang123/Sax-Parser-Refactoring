@@ -31,14 +31,14 @@ void error( std::string_view code, std::string_view msg )
 namespace
 {
 
-void unexpected( std::string_view code, std::string msg )
+void unexpected( std::string_view code, const std::string &msg )
 {
     auto message = logMsg( code, msg );
 
     throw message;
 }
 
-void unexpected( std::string msg )
+void unexpected(const std::string &msg )
 {
     unexpected( "lm::unexpected_element", msg );
 }
