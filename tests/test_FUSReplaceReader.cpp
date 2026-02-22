@@ -227,7 +227,7 @@ TEST_CASE("FUSReplaceReader: <Source> before <ID>", "[repository][replace]") {
         R"(<?xml version="1.0" encoding="UTF-8"?>
            <Functions>
              <Function>
-                <source>0.1</source>
+                <pattern>value...f_653960456h771489301.8_1</pattern>
                 <id>stringLength...f2128203875h-1761480648.5_1</id>
             </Function>
            </Functions>)";
@@ -239,7 +239,7 @@ TEST_CASE("FUSReplaceReader: <Source> before <ID>", "[repository][replace]") {
         FAIL("Expected M_SystemMessage to be thrown");
     } catch (const M_SystemMessage& msg) {
         CHECK(std::string(msg.getCode()) == "lm::other_function_child_before_id");
-        CHECK(std::string(msg.getDescription()).starts_with("Found <Source> before <ID> while parsing"));
+        CHECK(std::string(msg.getDescription()).starts_with("Found <Pattern> before <ID> while parsing"));
     }
 }
 
@@ -269,6 +269,33 @@ TEST_CASE("FUSReplaceReader parses doc with only ID as child of functions", "[re
     CHECK(std::string(functions[0].id.c_str()) == "stringLength...f2128203875h-1761480648.5_1");
     CHECK(std::string(functions[1].id.c_str()) == "stringLength...f2128203875h-1761480648.6_1");
     CHECK(std::string(functions[2].id.c_str()) == "stringLength...f2128203875h-1761480648.6_2");
+}
+
+TEST_CASE("FUSReplaceReader parses multiple IDs inside a Function", "[repository][replace]") {
+    ensure_xerces();
+
+    const char* xml =
+        R"(<?xml version="1.0" encoding="UTF-8"?>
+           <Functions>
+             <Function>
+                <ID>5_1</ID>
+                <ID>6_1</ID>
+            </Function>
+            <Function>
+                <ID>6_2</ID>
+            </Function>
+           </Functions>)";
+
+    TY_Blob blob(xml, std::strlen(xml));
+
+    auto functions = rpl::readRepo(blob, "test-simple-doc-no-source");
+
+    // this parser creates a Function object after an ID is detected, it doesn't validate against a schema.
+    REQUIRE(functions.size() == 3);
+
+    CHECK(std::string(functions[0].id.c_str()) == "5_1");
+    CHECK(std::string(functions[1].id.c_str()) == "6_1");
+    CHECK(std::string(functions[2].id.c_str()) == "6_2");
 }
 
 TEST_CASE("FUSReplaceReader parses simple doc without function child", "[repository][replace]") {
