@@ -60,7 +60,6 @@ namespace M::Memory {
 		if (void* Buffer = realloc( OldBuffer, Size))
 			return Buffer;
 		outOfMemoryHandler();
-
 	}
 
 	void release( void* OldBuffer)
@@ -71,37 +70,18 @@ namespace M::Memory {
 
 	void* duplicate( const void* OldBuffer, size_t Size)
 	{
-		if( !OldBuffer)
-		{
-			return( nullptr);
-		}
-
-		void* Result;
-
-		if(( Result = allocate( Size)))
-		{
-			if( Size)
-			{
-				memcpy( Result, OldBuffer, Size);
-			}
-		}
-
-		return( Result);
+		if( !OldBuffer) return nullptr;
+		void* Result = allocate( Size);
+		if (Size) memcpy( Result, OldBuffer, Size);
+		return Result;
 	}
 
 	char* duplicate( const char* Buffer, size_t Size)
 	{
-		if( !Buffer)
-			return nullptr;
-
+		if( !Buffer) return nullptr;
 		char* Result = static_cast<char*>( allocate( Size + 1));
-
-		if( Size)
-		{
-			memcpy( Result, Buffer, Size);
-		}
+		if( Size) memcpy( Result, Buffer, Size);
 		Result[Size]= '\0';
-
 		return Result;
 	}
 
