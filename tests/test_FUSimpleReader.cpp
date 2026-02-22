@@ -272,6 +272,53 @@ TEST_CASE("FUSimpleReader parses simple doc without <source>", "[repository][sim
     CHECK(std::string(functions[1].id.c_str()) == "stringLength...f2128203875h-1761480648.6_1");
 }
 
+TEST_CASE("FUSimpleReader parses multiple IDs inside a Function", "[repository][simple]") {
+    ensure_xerces();
+
+    const char* xml =
+        R"(<?xml version="1.0" encoding="UTF-8"?>
+           <Functions>
+             <Function>
+                <ID>5_1</ID>
+                <ID>6_1</ID>
+            </Function>
+            <Function>
+                <ID>6_2</ID>
+            </Function>
+           </Functions>)";
+
+    TY_Blob blob(xml, std::strlen(xml));
+
+    auto functions = spl::readRepo(blob, "test-simple-doc-no-source");
+
+    REQUIRE(functions.size() == 3);
+
+    CHECK(std::string(functions[0].id.c_str()) == "5_1");
+    CHECK(std::string(functions[1].id.c_str()) == "6_1");
+    CHECK(std::string(functions[2].id.c_str()) == "6_2");
+}
+
+TEST_CASE("FUSimpleReader parses empty IDs", "[repository][simple]") {
+    ensure_xerces();
+
+    const char* xml =
+        R"(<?xml version="1.0" encoding="UTF-8"?>
+           <Functions>
+             <Function>
+                <ID/>
+            </Function>
+            <Function>
+                <ID>1</ID>
+            </Function>
+           </Functions>)";
+
+    TY_Blob blob(xml, std::strlen(xml));
+    auto functions = spl::readRepo(blob, "test-empty-ids");
+    REQUIRE(functions.size() == 2);
+
+    CHECK(std::string(functions[0].id.c_str()).empty());
+    CHECK(std::string(functions[1].id.c_str()) == "1");
+}
 
 TEST_CASE("FUSimpleReader parses simple doc without function child", "[repository][simple]") {
     ensure_xerces();
