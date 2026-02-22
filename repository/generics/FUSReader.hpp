@@ -2,18 +2,16 @@
 #define CPP_TASK_FUSREADER_HPP
 #include "../utils.hpp"
 #include "../../XML/XML_Parser.hpp"
-
+#include "FUSpec.hpp"
 #include <ranges>
 
-template <class Spec>
+template <FUSpec Spec>
 class FUSReader : public XML_Parser
 {
 public:
     using Element = Spec::Element; // readers can have different element sets
     using Result  = Spec::Result; // readers can have different results
     using State   = Spec::State; // extensible, current index solution is buggy for sax parser
-
-    static_assert(std::is_enum_v<Element>, "Spec::Element should be an enum type.");
 
     Result read(const TY_Blob& data, std::string_view repo) && {
         m_repository.set(repo);

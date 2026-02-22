@@ -35,6 +35,7 @@ set(Sources
         ./repository/FUSReplaceReader.hpp
         ./repository/FUSReplaceReader.cpp
         ./repository/generics/FUSReader.hpp
+        ./repository/generics/FUSpec.hpp
         ./repository/specs/SimpleSpec.hpp
 )
 
