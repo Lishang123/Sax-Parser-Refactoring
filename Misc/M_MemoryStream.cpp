@@ -211,7 +211,7 @@ M_MemoryStream& M_MemoryStream::operator =( M_MemoryStream&& src) noexcept {
 void M_MemoryStream::flush() const
 {
 
-	if( !m_UnflushedContent.size())
+	if( m_UnflushedContent.empty())
 	{
 		// No new data. Bye bye.
 		return;
