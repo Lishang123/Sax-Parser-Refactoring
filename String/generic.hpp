@@ -10,6 +10,12 @@ namespace M::String
 {
 char* create( size_t Length);
 
+/**
+ * Returns a string view for the given c string
+ * Caller must ensure str outlives the view.
+ * @param str a raw string
+ * @return a non-owning view for str or empty view for nullptr
+ */
 inline constexpr std::string_view sv( const char *str ) noexcept
 {
     return str ? std::string_view { str } : std::string_view {};
@@ -46,7 +52,7 @@ inline constexpr int compare( const StringType auto& lhs, const StringType auto&
  * Checks two cstrings for equality up to Length character.
  * Strings are considered equal when:
  *		- both pointers are equal (including both being NULL)
- *		- neither is NULL and they contain the same values at first Length positions
+ *		- neither is NULL, and they contain the same values at first Length positions
  *
  * @param lhs		First string to compare
  * @param rhs		Second string to compare
