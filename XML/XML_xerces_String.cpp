@@ -171,17 +171,11 @@ int XML_xerces_String::compareNoCase( const char* LocalForm)
 
 int XML_xerces_String::compareNoCase( const XMLCh* XMLForm)
 {
-	if( !m_XMLForm && !getXMLForm())
-	{
-		if( XMLForm)
-		{
-			return( -1);
-		}
-		else
-		{
-			return( 0);
-		}
-	}
+	if (const XMLCh* self = getXMLForm(); !self) // no current XML form and can't generate it
+		return XMLForm ? -1:0;
+
+	if (!XMLForm) // self is not nullptr and input XML form is nullptr
+		return 1; // greater
 	
 	return( xercesc::XMLString::compareIString( m_XMLForm, XMLForm));
 }
