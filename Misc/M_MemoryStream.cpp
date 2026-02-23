@@ -302,6 +302,8 @@ void M_MemoryStream::writeConsume( M_MemoryStream& Stream)
 
 void M_MemoryStream::write( const TY_Blob* Content)
 {
+	if (!Content)
+		return;
 	write( Content->getContent(), Content->getSize());
 }
 
