@@ -22,6 +22,10 @@ class XML_xerces_String
 		XML_xerces_String();
 		explicit XML_xerces_String( std::string_view localForm );
 		explicit XML_xerces_String( const XMLCh* XMLForm );
+
+		XML_xerces_String(XML_xerces_String const&) = delete;
+		XML_xerces_String& operator=(XML_xerces_String const&) = delete;
+
 		virtual ~XML_xerces_String();
 
 		/** Set local form.
