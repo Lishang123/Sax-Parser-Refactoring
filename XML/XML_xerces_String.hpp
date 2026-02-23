@@ -24,7 +24,10 @@ class XML_xerces_String
 		explicit XML_xerces_String( const XMLCh* XMLForm );
 
 		XML_xerces_String(XML_xerces_String const&) = delete;
+		XML_xerces_String(XML_xerces_String&& other) noexcept;
+
 		XML_xerces_String& operator=(XML_xerces_String const&) = delete;
+		XML_xerces_String& operator=(XML_xerces_String&& other) noexcept;
 
 		virtual ~XML_xerces_String();
 

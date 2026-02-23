@@ -50,6 +50,35 @@ XML_xerces_String::XML_xerces_String( const XMLCh* String)
 	m_XMLForm = xercesc::XMLString::replicate( String);
 }
 
+XML_xerces_String::XML_xerces_String(XML_xerces_String &&other) noexcept
+: m_Transcoder( other.m_Transcoder), m_XMLForm( other.m_XMLForm), m_LocalForm( other.m_LocalForm)
+{
+	other.m_XMLForm = nullptr;
+	other.m_LocalForm = nullptr;
+	other.m_Transcoder = nullptr;
+}
+
+XML_xerces_String & XML_xerces_String::operator=(XML_xerces_String &&other) noexcept {
+	if( this == &other) {
+		return(*this);
+	}
+	// release old memory
+	M::Memory::release( m_LocalForm );
+	xercesc::XMLString::release( &m_XMLForm);
+	delete m_Transcoder;
+
+	// steal other's resources
+	m_XMLForm = other.m_XMLForm;
+	m_LocalForm = other.m_LocalForm;
+	m_Transcoder = other.m_Transcoder;
+
+	// remove other's pointers
+	other.m_XMLForm = nullptr;
+	other.m_LocalForm = nullptr;
+	other.m_Transcoder = nullptr;
+	return(*this);
+}
+
 XML_xerces_String::~XML_xerces_String()
 {
 	M::Memory::release( m_LocalForm );
