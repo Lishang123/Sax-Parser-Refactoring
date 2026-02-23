@@ -89,7 +89,10 @@ inline constexpr bool equal( const StringType auto& lhs, const StringType auto& 
     //        where this makes a difference :(
     auto lsv = sv( lhs );
     auto rsv = sv( rhs );
-    return ( !lsv.data() == !rsv.data() ) && ( compare( lsv, rsv ) == 0 );
+    const bool lnull = (lsv.data() == nullptr);
+    const bool rnull = (rsv.data() == nullptr);
+    return (lnull == rnull) && (compare(lsv, rsv) == 0);
+    // return ( !lsv.data() == !rsv.data() ) && ( compare( lsv, rsv ) == 0 );
 }
 
 [[nodiscard]]
@@ -100,6 +103,9 @@ inline constexpr bool equal( const StringType auto& lhs, const StringType auto& 
     //        where this makes a difference :(
     auto lsv = sv( lhs );
     auto rsv = sv( rhs );
+    const bool lnull = (lsv.data() == nullptr);
+    const bool rnull = (rsv.data() == nullptr);
+    return (lnull == rnull) && (compare(lsv, rsv, length ) == 0);
     return ( !lsv.data() == !rsv.data() ) && ( compare( lsv, rsv, length ) == 0 );
 }
 
