@@ -113,12 +113,12 @@ char* XML_xerces_String::convertToLocalForm( const XMLCh* XMLForm) const
 	// If we have an input of more than 64k, this might fail badly.
 	if( m_Transcoder)
 	{
-		unsigned int CharsAvailable = xercesc::XMLString::stringLen( XMLForm);
+		const XMLSize_t CharsAvailable = xercesc::XMLString::stringLen( XMLForm);
 		char* LocalForm = M::Memory::create( CharsAvailable * 4);
 
 		XMLSize_t CharsEaten;
 
-		int ResultLength =
+		const XMLSize_t ResultLength =
 			m_Transcoder->transcodeTo( XMLForm, CharsAvailable,
 		                               reinterpret_cast< unsigned char*>( LocalForm),
 		                               CharsAvailable * 4, CharsEaten,
