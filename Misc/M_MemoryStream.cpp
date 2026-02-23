@@ -191,10 +191,17 @@ M_MemoryStream::M_MemoryStream( const TY_Blob* Content)
 }
 
 M_MemoryStream& M_MemoryStream::operator =( M_MemoryStream&& src) noexcept {
+	if (this == &src)
+		return *this;
+
 	m_UnflushedContent = std::move( src.m_UnflushedContent);
 	m_Content = std::move( src.m_Content);
 	m_ReadPosition = src.m_ReadPosition;
 	m_Size = src.m_Size;
+
+	src.m_ReadPosition = 0;
+	src.m_Size = 0;
+
 	return *this;
 }
 
