@@ -22,7 +22,19 @@ class M_MemoryStreamFragment
 		T_uint64	m_FreeSize;
 
 	public:
+
+		/**
+		 * This constructor only shallow copies the input pointer.
+		 * @param Content
+		 * @param Size
+		 */
 		M_MemoryStreamFragment( char* Content, T_uint64 Size);
+
+		/**
+		 * This constructor allocates memory and deep copies the Content.
+		 * @param Content
+		 * @param Size
+		 */
 		M_MemoryStreamFragment( const char* Content, T_uint64 Size);
 		M_MemoryStreamFragment( const M_MemoryStreamFragment& src) = delete;
 		M_MemoryStreamFragment( M_MemoryStreamFragment&& src);
