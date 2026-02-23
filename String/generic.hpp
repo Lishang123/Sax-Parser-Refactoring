@@ -23,10 +23,29 @@ inline constexpr std::string_view sv( const char *str ) noexcept
 
 // This will take anything convertible to `std::string_view` except
 // (potentially cv-qualified) `char*` because we have to guard that one against nulls
-template<typename S> requires
-    ( !std::is_same_v<char, std::remove_reference_t<std::remove_cv_t<std::remove_pointer_t<S>>>> ) &&
-    requires(S s) { std::string_view{ s }; }
-inline std::string_view sv( const S &str ) noexcept { return std::string_view { str }; }
+// template<typename S>
+//     requires(
+//     // the ordering is potentially wrong, remove reference -> remove pointer -> remove cv
+//     !std::is_same_v<char,
+//         std::remove_reference_t<
+//             std::remove_cv_t<
+//                 std::remove_pointer_t<S>
+//               >
+//             >
+//         > ) &&
+//     requires(S s) { std::string_view{ s }; }
+// inline std::string_view sv( const S &str ) noexcept { return std::string_view { str }; }
+
+template<class T>
+inline constexpr bool is_char_pointer_v =
+    std::is_pointer_v<std::remove_reference_t<T>> &&
+    std::is_same_v<
+        char,
+        std::remove_cv_t<std::remove_pointer_t<std::remove_reference_t<T>>>
+    >;
+template<typename S>
+    requires (!is_char_pointer_v<S>) && requires(const S& s) { std::string_view{s}; }
+inline constexpr std::string_view sv(const S& s) noexcept { return std::string_view{s}; }
 
 // A string is anything, that we have a `sv()` function yielding `std::string_view` for.
 template<typename S>
