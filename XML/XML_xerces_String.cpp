@@ -185,34 +185,25 @@ int XML_xerces_String::compareNoCase( const XMLCh* XMLForm)
 
 int XML_xerces_String::compare( const char* LocalForm)
 {
-	if( !getLocalForm().data() )
-	{
-		if( LocalForm)
-		{
-			return( -1);
-		}
-		else
-		{
-			return( 0);
-		}
-	}
-	
+	// first try lazy generating the local string
+	const char* self = getLocalForm().data();
+
+	if (!self) // cannot be generated
+		return LocalForm ? -1 : 0;
+
+	if (!LocalForm) // non-null self vs null input
+		return 1;
+
 	return( strcmp( m_LocalForm, LocalForm));
 }
 
 int XML_xerces_String::compare( const XMLCh* XMLForm)
 {
-	if( !m_XMLForm && !getXMLForm())
-	{
-		if( XMLForm)
-		{
-			return( -1);
-		}
-		else
-		{
-			return( 0);
-		}
-	}
-	
+	if (const XMLCh* self = getXMLForm(); !self) // no current XML form and can't generate it
+		return XMLForm ? -1:0;
+
+	if (!XMLForm) // self is not null and input XML form is null
+		return 1; // greater
+
 	return( xercesc::XMLString::compareString( m_XMLForm, XMLForm));
 }
