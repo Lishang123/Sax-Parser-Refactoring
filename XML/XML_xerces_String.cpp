@@ -160,18 +160,12 @@ const XMLCh* XML_xerces_String::getXMLForm()
 
 int XML_xerces_String::compareNoCase( const char* LocalForm)
 {
-	if( !getLocalForm().data() )
-	{
-		if( LocalForm)
-		{
-			return( -1);
-		}
-		else
-		{
-			return( 0);
-		}
-	}
-	
+	if (!LocalForm) // empty input
+		return m_LocalForm? 1 : 0;
+
+	if( !getLocalForm().data() ) //empty string
+		return( -1); // less
+
 	return( strcasecmp( m_LocalForm, LocalForm));
 }
 
