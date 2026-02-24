@@ -3,6 +3,7 @@ add_executable(unit_tests
         test_FUSReplaceReader.cpp
         test_utils.cpp
         test_ST_String.cpp
+        test_XML_Parser.cpp
 )
 
 target_link_libraries(unit_tests PRIVATE
