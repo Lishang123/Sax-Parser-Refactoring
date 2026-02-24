@@ -1,13 +1,14 @@
 #include <catch2/catch_test_macros.hpp>
 #define private public
 #include "../Misc/M_MemoryStream.hpp"
+#include "../Misc/Memory.hpp"
 #undef private
 
 #define FRAGMENT_SIZE 2048
 
-TEST_CASE("M_MemoryStreamFragment: Copy constructor allocates and copies", "[misc][memoryStreamFragment]")
+TEST_CASE("M_MemoryStreamFragment: Copy constructor allocates and copies", "[misc][streamFragment]")
 {
-    const std::string src = "FragmentContent";
+    const std::string src = "Content";
     M_MemoryStreamFragment fragment(src.data(), src.size());
 
     const char* p = nullptr;
@@ -23,6 +24,71 @@ TEST_CASE("M_MemoryStreamFragment: Copy constructor allocates and copies", "[mis
         REQUIRE(fragment.getFreeSize() == (FRAGMENT_SIZE * 2u) - static_cast<T_uint64>(src.size()));
     }
 }
+
+TEST_CASE("M_MemoryStreamFragment: normal constructor does not copy", "[misc][streamFragment]")
+{
+    // create a non const char* so that the normal constructor is called
+    char* non_const_chars = M::Memory::allocate<char>(7);
+    std::memcpy(non_const_chars, "Content", 7);
+
+    const M_MemoryStreamFragment fragment(non_const_chars, 7);
+
+    const char* p = nullptr;
+    const T_uint64 content_size = fragment.getContent(&p);
+
+    REQUIRE(content_size == 7);
+    REQUIRE(p == non_const_chars); // should still be the same pointer (no copy)
+    REQUIRE(fragment.getFreeSize() == 0); // copy constructor would allocate more
+    REQUIRE(std::string_view{p, content_size} == "Content");
+}
+
+TEST_CASE("M_MemoryStreamFragment: move constructor", "[misc][streamFragment]")
+{
+
+    // create a non const char* so that the normal constructor is called
+    char* non_const_chars = M::Memory::allocate<char>(7);
+    std::memcpy(non_const_chars, "Content", 7);
+
+    M_MemoryStreamFragment fragment_a(non_const_chars, 7);
+    M_MemoryStreamFragment fragment_b(std::move(fragment_a));
+
+    // destination owns original pointer
+    const char* ptr_b = nullptr;
+    REQUIRE(fragment_b.getContent(&ptr_b) == 7);
+    REQUIRE(ptr_b == non_const_chars); // should be the same pointer as the original
+
+    // source should be empty after move
+    const char* ptr_a = nullptr;
+    REQUIRE(fragment_a.getContent(&ptr_a) == 0); // m_UsedSize should be reset
+    REQUIRE(ptr_a == nullptr);
+}
+
+TEST_CASE("M_MemoryStreamFragment: move assignment operator", "[misc][streamFragment]")
+{
+    // First fragment owns buffer1
+    char* buffer1 = M::Memory::allocate<char>(7);
+    std::memcpy(buffer1, "Content", 7);
+    M_MemoryStreamFragment fragment1(buffer1, 7);
+
+    // Second fragment owns buffer2
+    char* buffer2 = M::Memory::allocate<char>(10);
+    std::memcpy(buffer2, "ContentNew", 10);
+    M_MemoryStreamFragment fragment2(buffer2, 10);
+
+    fragment1 = std::move(fragment2);
+
+    // fragment1 should own buffer2, and fragment2 should be empty.
+    const char* ptr1 = nullptr;
+    REQUIRE(fragment1.getContent(&ptr1) == 10);
+    REQUIRE(ptr1 == buffer2);
+    REQUIRE(std::string_view{ptr1, 10} == "ContentNew");
+
+    const char* ptr2 = nullptr;
+    REQUIRE(fragment2.getContent(&ptr2) == 0); // the original code would fail here!
+    REQUIRE(ptr2 == nullptr);
+}
+
+/* ------ M_MemoryStream -------- */
 
 TEST_CASE("M_MemoryStream::write(const char* Content, T_uint64 Size) reuses last unflushed fragment", "[misc][memoryStream]")
 {
