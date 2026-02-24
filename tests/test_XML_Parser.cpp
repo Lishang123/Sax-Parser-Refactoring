@@ -53,3 +53,84 @@ TEST_CASE("XML_Parser ignores (wrong) XML declaration", "[xml][parser]") {
     }
 }
 
+
+class AttrLongTestParser final : public XML_Parser {
+public:
+    long attrValue = 0;
+    bool foundTag = false;
+    bool attrLongExists = false;
+
+    bool startElementChar(const char* /*uri*/,
+                          const char* /*localName*/,
+                          const char* qName,
+                          const xercesc::Attributes& attrs) override
+    {
+        if (std::string_view{qName} == "Functions") {
+            foundTag = true;
+            attrValue = getAttributeLong(attrs, "count", attrLongExists);
+        }
+        return true;
+    }
+};
+
+TEST_CASE("XML_Parser accepts valid attribute value", "[xml][parser]") {
+    ensure_xerces();
+
+    const char* xml =
+        R"(<Functions count="1000"></Functions>)";
+
+    TY_Blob blob(xml, std::strlen(xml));
+
+    AttrLongTestParser parser;
+    parser.parseBlob(&blob);
+    REQUIRE(parser.parseBlob(&blob));
+    REQUIRE(parser.attrLongExists);
+    REQUIRE(parser.attrValue == 1000);
+}
+
+TEST_CASE("XML_Parser ignores no attribute", "[xml][parser]") {
+    ensure_xerces();
+
+    const char* xml =
+        R"(<Functions></Functions>)";
+
+    TY_Blob blob(xml, std::strlen(xml));
+
+    AttrLongTestParser parser;
+    parser.parseBlob(&blob);
+    REQUIRE(parser.parseBlob(&blob));
+    REQUIRE_FALSE(parser.attrLongExists);
+    REQUIRE_FALSE(parser.attrValue);
+}
+
+TEST_CASE("XML_Parser rejects invalid attribute value", "[xml][parser]") {
+    ensure_xerces();
+
+    const char* xml =
+        R"(<Functions count="abc"></Functions>)";
+
+    TY_Blob blob(xml, std::strlen(xml));
+
+    AttrLongTestParser parser;
+    parser.parseBlob(&blob);
+    REQUIRE(parser.parseBlob(&blob));
+    REQUIRE_FALSE(parser.attrLongExists); // fail!
+    REQUIRE_FALSE(parser.attrValue);
+}
+
+TEST_CASE("XML_Parser ignores empty attribute value", "[xml][parser]") {
+    ensure_xerces();
+
+    const char* xml =
+        R"(<Functions count=""></Functions>)";
+
+    TY_Blob blob(xml, std::strlen(xml));
+
+    AttrLongTestParser parser;
+    parser.parseBlob(&blob);
+    REQUIRE(parser.parseBlob(&blob));
+    REQUIRE_FALSE(parser.attrLongExists); // fail!
+    REQUIRE_FALSE(parser.attrValue);
+}
+
+
