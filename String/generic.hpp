@@ -49,6 +49,13 @@ inline constexpr std::string_view sv(const S& s) noexcept { return std::string_v
 
 // A string is anything, that we have a `sv()` function yielding `std::string_view` for.
 template<typename S>
+concept StringTypeLegacy =
+( !std::is_same_v<std::nullptr_t, S> ) &&
+requires( S s ) {
+{ sv( s ) } -> std::same_as<std::string_view>;
+};
+
+template<typename S>
 concept StringType =
         (!std::same_as<std::remove_cvref_t<S>, std::nullptr_t>) &&
         requires( const S& s ) {
