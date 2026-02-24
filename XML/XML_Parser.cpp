@@ -473,10 +473,12 @@ long XML_Parser::getAttributeLong( const xercesc::Attributes &attributes, std::s
         std::istringstream iss(XML_xerces_String{ xmlValue }.getLocalForm().data());
         long result {};
         iss >> result;
-        if( iss.fail() || iss.eof() )
-        {
-            exists = true;
-            return result;
+        if (!iss.fail()) { // should fail for invalid input, so it shouldn't fail if attribute long exists
+            // iss >> std::ws; // no trailing whitespaces to preserve the original behavior
+            if (iss.eof()) { // should fail for unconsumed string and there shouldn't be any
+                exists = true;
+                return result;
+            }
         }
     }
 
