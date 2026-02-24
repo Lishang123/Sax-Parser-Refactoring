@@ -11,6 +11,8 @@
 #include <iostream>
 #include <string>
 
+#include "catch2/catch_template_test_macros.hpp"
+
 namespace fs = std::filesystem;
 
 // Initialize Xerces
@@ -53,8 +55,13 @@ TEST_CASE("XML_Parser ignores (wrong) XML declaration", "[xml][parser]") {
     }
 }
 
+template <typename Parser>
+static Parser makeParser()
+{
+    return Parser{};
+}
 
-class AttrLongTestParser final : public XML_Parser {
+class AttrLongTestParserLegacy final : public XML_Parser {
 public:
     long attrValue = 0;
     bool foundTag = false;
@@ -73,7 +80,30 @@ public:
     }
 };
 
-TEST_CASE("XML_Parser accepts valid attribute value", "[xml][parser]") {
+class AttrLongTestParserRefactored final : public XML_Parser {
+public:
+    long attrValue = 0;
+    bool foundTag{};
+    bool attrLongExists{};
+
+    bool startElementChar(const char* /*uri*/,
+                          const char* /*localName*/,
+                          const char* qName,
+                          const xercesc::Attributes& attrs) override
+    {
+        if (std::string_view{qName} == "Functions") {
+            foundTag = true;
+            auto res = getAttributeLongOptional(attrs, "count");
+            if (res.has_value()) {
+                attrLongExists = true;
+                attrValue = res.value();
+            }
+        }
+        return true;
+    }
+};
+
+TEMPLATE_TEST_CASE("XML_Parser accepts valid attribute value", "[xml][parser]", AttrLongTestParserLegacy, AttrLongTestParserRefactored) {
     ensure_xerces();
 
     const char* xml =
@@ -81,14 +111,14 @@ TEST_CASE("XML_Parser accepts valid attribute value", "[xml][parser]") {
 
     TY_Blob blob(xml, std::strlen(xml));
 
-    AttrLongTestParser parser;
+    auto parser = makeParser<TestType>();
     parser.parseBlob(&blob);
     REQUIRE(parser.parseBlob(&blob));
     REQUIRE(parser.attrLongExists);
     REQUIRE(parser.attrValue == 1000);
 }
 
-TEST_CASE("XML_Parser ignores no attribute", "[xml][parser]") {
+TEMPLATE_TEST_CASE("XML_Parser ignores no attribute", "[xml][parser]", AttrLongTestParserLegacy, AttrLongTestParserRefactored) {
     ensure_xerces();
 
     const char* xml =
@@ -96,14 +126,14 @@ TEST_CASE("XML_Parser ignores no attribute", "[xml][parser]") {
 
     TY_Blob blob(xml, std::strlen(xml));
 
-    AttrLongTestParser parser;
+    AttrLongTestParserLegacy parser;
     parser.parseBlob(&blob);
     REQUIRE(parser.parseBlob(&blob));
     REQUIRE_FALSE(parser.attrLongExists);
     REQUIRE_FALSE(parser.attrValue);
 }
 
-TEST_CASE("XML_Parser rejects invalid attribute value", "[xml][parser]") {
+TEMPLATE_TEST_CASE("XML_Parser rejects invalid attribute value", "[xml][parser]", AttrLongTestParserLegacy, AttrLongTestParserRefactored) {
     ensure_xerces();
 
     const char* xml =
@@ -111,14 +141,14 @@ TEST_CASE("XML_Parser rejects invalid attribute value", "[xml][parser]") {
 
     TY_Blob blob(xml, std::strlen(xml));
 
-    AttrLongTestParser parser;
+    auto parser = makeParser<TestType>();
     parser.parseBlob(&blob);
     REQUIRE(parser.parseBlob(&blob));
     REQUIRE_FALSE(parser.attrLongExists); // fail for original implementation
     REQUIRE_FALSE(parser.attrValue);
 }
 
-TEST_CASE("XML_Parser ignores empty attribute value", "[xml][parser]") {
+TEMPLATE_TEST_CASE("XML_Parser ignores empty attribute value", "[xml][parser]", AttrLongTestParserLegacy, AttrLongTestParserRefactored) {
     ensure_xerces();
 
     const char* xml =
@@ -126,7 +156,7 @@ TEST_CASE("XML_Parser ignores empty attribute value", "[xml][parser]") {
 
     TY_Blob blob(xml, std::strlen(xml));
 
-    AttrLongTestParser parser;
+    auto parser = makeParser<TestType>();
     parser.parseBlob(&blob);
     REQUIRE(parser.parseBlob(&blob));
     REQUIRE_FALSE(parser.attrLongExists); // fail for original implementation
