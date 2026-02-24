@@ -458,8 +458,6 @@ M_SystemMessage XML_Parser::systemMessageFromException( const xercesc::SAXParseE
 
 ST_String XML_Parser::getAttributeValue( const xercesc::Attributes &attributes, std::string_view name )
 {
-    XML_xerces_String  nam2 = XML_xerces_String( name );
-    const auto *value2 = attributes.getValue( nam2.getXMLForm() );
     if( const auto *value = attributes.getValue( XML_xerces_String { name }.getXMLForm() ) )
     {
         return ST_String { XML_xerces_String { value }.getLocalForm() };
