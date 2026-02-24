@@ -168,6 +168,14 @@ public:
 
     static long getAttributeLong(const xercesc::Attributes &attributes, std::string_view name);
 
+    /**
+     * Get the value of a boolean attribute with a given name
+     * @param attributes xerces attributes set
+     * @param name name of the attribute
+     * @param exists a variable to be overridden by the function (true if exists)
+     * @return the value of the boolean attribute
+     * @pre The value must be lower-case 'true' or 'false', i.e. '0/1' or uppercase values are not supported
+     */
     static bool getAttributeBool(const xercesc::Attributes &attributes, std::string_view name, bool &exists);
 
     static bool getAttributeBool(const xercesc::Attributes &attributes, std::string_view name);
