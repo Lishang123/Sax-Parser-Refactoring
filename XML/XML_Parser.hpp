@@ -160,6 +160,14 @@ public:
 
     xercesc::InputSource *resolveEntity(xercesc::XMLResourceIdentifier *resourceIdentifier) override;
 
+    /**
+     * Get the value of an attribute with a given name
+     * @param attributes xerces attributes set
+     * @param name name of the attribute
+     * @return the value of the found attribute <br>
+     *      empty string for non-existing attribute or empty attribute value
+     * @note this function doesn't differentiate non-existing attribute and empty attribute value
+     */
     static ST_String getAttributeValue(const xercesc::Attributes &attributes, std::string_view name);
 
     static std::optional<long> getAttributeLongOptional(const xercesc::Attributes &attributes, std::string_view name);
