@@ -59,6 +59,8 @@ XML_Parser::XML_Parser(bool UseValidation, bool UseNamespaces, bool IgnoreXMLDec
         : m_UseNamespaces( UseNamespaces)
         , m_IgnoreXMLDeclaration( IgnoreXMLDeclaration)
         , m_UsingXOP( false)
+        , m_Result(false)
+        , m_CurrentCharactersArePlainBinaryData(false)
 {
     XML_xerces_String Validation( "http://xml.org/sax/features/validation");
     m_Parser.setFeature( Validation.getXMLForm(), UseValidation);
