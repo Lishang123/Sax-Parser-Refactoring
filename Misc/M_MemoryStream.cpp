@@ -330,8 +330,8 @@ void M_MemoryStream::write( const char* Content, T_uint64 Size)
 	{
 		return;
 	}
-
-	if( hasUnflushedContent() && m_lastUnflushed().getFreeSize() > Size)
+	// we can theoretically fill in one block if it has the exact free size as the content
+	if( hasUnflushedContent() && m_lastUnflushed().getFreeSize() >= Size)
 	{
 		m_lastUnflushed().append( Content, Size);
 	}
