@@ -162,7 +162,7 @@ public:
 
     static ST_String getAttributeValue(const xercesc::Attributes &attributes, std::string_view name);
 
-    std::optional<long> getAttributeLongOptional(const xercesc::Attributes &attributes, std::string_view name);
+    static std::optional<long> getAttributeLongOptional(const xercesc::Attributes &attributes, std::string_view name);
 
     static long getAttributeLong(const xercesc::Attributes &attributes, std::string_view name, bool &exists);
 
