@@ -68,6 +68,7 @@ public:
     bool foundTag = false;
     bool attrLongExists = false;
     bool attrBoolExists = false;
+    ST_String attrValue;
 
     bool startElementChar(const char* /*uri*/,
                           const char* /*localName*/,
@@ -78,6 +79,7 @@ public:
             foundTag = true;
             attrValueLong = getAttributeLong(attrs, "count", attrLongExists);
             attrValueBool = getAttributeBool(attrs, "optional", attrBoolExists);
+            attrValue = getAttributeValue(attrs, "note");
         }
         return true;
     }
@@ -218,5 +220,47 @@ TEMPLATE_TEST_CASE("XML_Parser parses invalid boolean attribute", "[xml][parser]
     REQUIRE(parser.parseBlob(&blob));
     REQUIRE_FALSE(parser.attrBoolExists);
     REQUIRE_FALSE(parser.attrValueBool);
+}
+
+TEST_CASE("XML_Parser parses text attribute", "[xml][parser][attr][value]") {
+    ensure_xerces();
+
+    const char* xml =
+        R"(<Functions note="description"></Functions>)";
+
+    TY_Blob blob(xml, std::strlen(xml));
+
+    auto parser = AttrTestParserLegacy{};
+    parser.parseBlob(&blob);
+    REQUIRE(parser.parseBlob(&blob));
+    REQUIRE(parser.attrValue == "description");
+}
+
+TEST_CASE("XML_Parser parses empty text attribute", "[xml][parser][attr][value]") {
+    ensure_xerces();
+
+    const char* xml =
+        R"(<Functions note=""></Functions>)";
+
+    TY_Blob blob(xml, std::strlen(xml));
+
+    auto parser = AttrTestParserLegacy{};
+    parser.parseBlob(&blob);
+    REQUIRE(parser.parseBlob(&blob));
+    REQUIRE(parser.attrValue == "");
+}
+
+TEST_CASE("XML_Parser parses non-existing attribute", "[xml][parser][attr][value]") {
+    ensure_xerces();
+
+    const char* xml =
+        R"(<Functions></Functions>)";
+
+    TY_Blob blob(xml, std::strlen(xml));
+
+    auto parser = AttrTestParserLegacy{};
+    parser.parseBlob(&blob);
+    REQUIRE(parser.parseBlob(&blob));
+    REQUIRE(parser.attrValue == "");
 }
 
