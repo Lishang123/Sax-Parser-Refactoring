@@ -14,6 +14,8 @@
 #include "XML_Parser.hpp"
 #include <array>
 #include <sstream>
+#include <optional>
+#include <charconv>
 
 namespace core::xml
 {
@@ -464,6 +466,33 @@ ST_String XML_Parser::getAttributeValue( const xercesc::Attributes &attributes, 
     }
 
     return {};
+}
+
+std::optional<long> XML_Parser::getAttributeLongOptional(const xercesc::Attributes& attributes,
+                             const std::string_view name)
+{
+    // get the attribute value
+    XML_xerces_String xmlName{name};
+    const XMLCh* xmlValue = attributes.getValue(xmlName.getXMLForm());
+
+    if (!xmlValue)
+        return std::nullopt;
+
+    // convert it into string
+    XML_xerces_String localValue{xmlValue};
+    const std::string_view str = localValue.getLocalForm();
+
+    long result{};
+    const char* begin = str.data();
+    const char* end   = begin + str.size();
+
+    auto [ptr, ec] = std::from_chars(begin, end, result);
+
+    // success only if no error + entire string is consumed
+    if (ec == std::errc{} && ptr == end)
+        return result;
+
+    return std::nullopt;
 }
 
 long XML_Parser::getAttributeLong( const xercesc::Attributes &attributes, std::string_view name, bool& exists)
