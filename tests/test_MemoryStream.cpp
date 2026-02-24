@@ -3,9 +3,29 @@
 #include "../Misc/M_MemoryStream.hpp"
 #undef private
 
+#define FRAGMENT_SIZE 2048
+
+TEST_CASE("M_MemoryStreamFragment: Copy constructor allocates and copies", "[misc][memoryStreamFragment]")
+{
+    const std::string src = "FragmentContent";
+    M_MemoryStreamFragment fragment(src.data(), src.size());
+
+    const char* p = nullptr;
+    const auto n = fragment.getContent(&p);
+
+    REQUIRE(n == src.size());
+    REQUIRE(p != nullptr);
+    REQUIRE(std::string_view{p, static_cast<size_t>(n)} == src);
+
+    // For Size < FRAGMENT_SIZE, copy constructor allocates FRAGMENT_SIZE*2
+    if (src.size() < FRAGMENT_SIZE)
+    {
+        REQUIRE(fragment.getFreeSize() == (FRAGMENT_SIZE * 2u) - static_cast<T_uint64>(src.size()));
+    }
+}
+
 TEST_CASE("M_MemoryStream::write(const char* Content, T_uint64 Size) reuses last unflushed fragment", "[misc][memoryStream]")
 {
-    constexpr unsigned FRAGMENT_SIZE = 2048;
 
     M_MemoryStream s;
 
