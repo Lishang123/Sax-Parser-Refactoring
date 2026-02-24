@@ -128,14 +128,14 @@ public:
     virtual bool parseBlob(const TY_Blob *Buffer);
 
     /** Set parser feature
-      * See http://xml.apache.org/xerces-c/program-sax2.html#SAX2Features
+      * See http://xml.apache.org/xerces-c/program-sax2.html#SAX2Features (dead link)
       * @param Name Name of the feature
       * @param Value true or false to enable/disable feature
       */
     void setOption(const char *Name, bool Value);
 
     /** Set parser property
-      * See http://xml.apache.org/xerces-c/program-sax2.html#SAX2Properties
+      * See http://xml.apache.org/xerces-c/program-sax2.html#SAX2Properties (dead link)
       * @param Name Name of the property
       * @param Value String to set the property
       */

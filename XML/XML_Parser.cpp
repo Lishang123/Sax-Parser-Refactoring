@@ -106,7 +106,9 @@ void XML_Parser::setOption( const char* Name, const char* Value)
 {
     XML_xerces_String OptionName( Name);
     XML_xerces_String OptionValue( Value);
-    m_Parser.setProperty( OptionName.getXMLForm(), (void*) OptionValue.getXMLForm());
+    // OptionalValue.m_XMLForm is copied downstream in setExternalSchemaLocation and setExternalNoNamespaceSchemaLocation
+    // so no dangling pointer later :)
+    m_Parser.setProperty( OptionName.getXMLForm(), const_cast<XMLCh *>(OptionValue.getXMLForm()));
 }
 
 void XML_Parser::setIgnoreXMLDeclaration( bool Ignore)
