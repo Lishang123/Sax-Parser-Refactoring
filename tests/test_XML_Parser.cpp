@@ -114,7 +114,7 @@ TEST_CASE("XML_Parser rejects invalid attribute value", "[xml][parser]") {
     AttrLongTestParser parser;
     parser.parseBlob(&blob);
     REQUIRE(parser.parseBlob(&blob));
-    REQUIRE_FALSE(parser.attrLongExists); // fail!
+    REQUIRE_FALSE(parser.attrLongExists); // fail for original implementation
     REQUIRE_FALSE(parser.attrValue);
 }
 
@@ -129,7 +129,7 @@ TEST_CASE("XML_Parser ignores empty attribute value", "[xml][parser]") {
     AttrLongTestParser parser;
     parser.parseBlob(&blob);
     REQUIRE(parser.parseBlob(&blob));
-    REQUIRE_FALSE(parser.attrLongExists); // fail!
+    REQUIRE_FALSE(parser.attrLongExists); // fail for original implementation
     REQUIRE_FALSE(parser.attrValue);
 }
 
