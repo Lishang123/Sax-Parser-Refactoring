@@ -421,8 +421,7 @@ void XML_Parser::errorMessage( const M_SystemMessage& message ) {
     throw SystemMessageError(message);
 }
 
-M_SystemMessage
-XML_Parser::systemMessageFromException( const xercesc::SAXParseException& E, const char* Code,
+M_SystemMessage XML_Parser::systemMessageFromException( const xercesc::SAXParseException& E, const char* Code,
                                         const char* errorLevel )
 {
     // Generate XPath location
