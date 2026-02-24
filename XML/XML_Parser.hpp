@@ -43,29 +43,29 @@ private:
     M_MemoryStream m_CharacterBuffer;
 
 /** xerces DefaultHandler interface. */
-    virtual void startElement(const XMLCh *const URI, const XMLCh *const LocalName,
+    void startElement(const XMLCh *const URI, const XMLCh *const LocalName,
                               const XMLCh *const QName,
-                              const xercesc::Attributes &CurrentAttributes);
+                              const xercesc::Attributes &CurrentAttributes) override;
 
-    virtual void endElement(const XMLCh *const URI, const XMLCh *const LocalName,
-                            const XMLCh *const QName);
+    void endElement(const XMLCh *const URI, const XMLCh *const LocalName,
+                            const XMLCh *const QName) override;
 
-    virtual void characters(const XMLCh *const Chars, const XMLSize_t Length);
+    void characters(const XMLCh *const Chars, const XMLSize_t Length) override;
 
     virtual void characters(const std::string &LocalCharacters);
 
     virtual void endCharacters();
 
-    virtual void startPrefixMapping(const XMLCh *const Prefix, const XMLCh *const URI);
+    void startPrefixMapping(const XMLCh *const Prefix, const XMLCh *const URI) override;
 
-    virtual void endPrefixMapping(const XMLCh *const Prefix);
+    void endPrefixMapping(const XMLCh *const Prefix) override;
 
 /** SAX ErrorHandler interface. */
-    virtual void warning(const xercesc::SAXParseException &Exception);
+    void warning(const xercesc::SAXParseException &Exception) override;
 
-    virtual void error(const xercesc::SAXParseException &Exception);
+    void error(const xercesc::SAXParseException &Exception) override;
 
-    virtual void fatalError(const xercesc::SAXParseException &Exception);
+    void fatalError(const xercesc::SAXParseException &Exception) override;
 
     void m_errorMessage(const xercesc::SAXParseException &E, const char *Code, const char *Description);
 
@@ -87,9 +87,7 @@ public:
 
     XML_Parser(bool UseValidation = false, bool UseNamespaces = false, bool IgnoreXMLDeclaration = false);
 
-    virtual ~
-
-    XML_Parser();
+    ~XML_Parser() override;
 
 /** Start of a new element. */
     virtual bool startElementChar(const char *URI, const char *LocalName, const char *QName,
@@ -154,7 +152,7 @@ public:
 
     using xercesc::DefaultHandler::resolveEntity;
 
-    xercesc::InputSource *resolveEntity(xercesc::XMLResourceIdentifier *resourceIdentifier)
+    xercesc::InputSource *resolveEntity(xercesc::XMLResourceIdentifier *resourceIdentifier) override;
 
     override;
 
