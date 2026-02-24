@@ -8,7 +8,7 @@
 
 #include "../Misc/M_MemoryStream.hpp"
 #include "../Misc/Memory.hpp"
-#include "../Misc/M_SystemMessage.hpp"
+#include "../Misc/SystemMessageError.hpp"
 #include <sys/stat.h>
 #include "../Types/TY_Blob.hpp"
 #include "XML_Parser.hpp"
@@ -417,8 +417,9 @@ bool XML_Parser::charactersChar( const char* URI, const char* LocalName, const c
     return true;
 }
 
-void XML_Parser::errorMessage( const M_SystemMessage& message )
-{}
+void XML_Parser::errorMessage( const M_SystemMessage& message ) {
+    throw SystemMessageError(message);
+}
 
 M_SystemMessage
 XML_Parser::systemMessageFromException( const xercesc::SAXParseException& E, const char* Code,
