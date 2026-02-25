@@ -1,4 +1,10 @@
 # Notes for the reviewers
+The repository includes:
+- Bug fixes 
+- Modernized C++ refactoring 
+- Refactoring of legacy components 
+- Unit tests using Catch2
+
 All the refactors to the reader are implemented in FUSimpleReader.
 Since FUSReplaceReader is really similar to FUSimpleReader and 
 a template + spec files are added later, I intentionally 
@@ -6,6 +12,21 @@ leave FUSReplaceReader partially unmodified to preserve the original
 for testing purposes.
 
 And the generic template is the final version after the refactoring.
+
+
+## Build Instructions
+
+### Build
+
+```bash
+cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Debug
+cmake --build build --target unit_tests --parallel
+```
+
+### Run Tests
+```bash
+./build/tests/unit_tests
+```
 
 ---------
 
