@@ -83,3 +83,32 @@ TEST_CASE("XML_xerces_String: Move assignment transfers ownership", "[xml][xml-x
     REQUIRE(a.getLocalForm().empty());
     REQUIRE(a.getXMLForm() == nullptr);
 }
+
+TEST_CASE("XML_xerces_String: compare")
+{
+    ensure_xerces();
+
+    XML_xerces_String s("abc");
+
+    REQUIRE(s.compare(static_cast<const char*>(nullptr)) == 1);
+    REQUIRE(s.compare(static_cast<const XMLCh*>(nullptr)) == 1);
+    REQUIRE(s.compare("aBc") != 0);
+
+    XML_xerces_String empty;
+
+    REQUIRE(empty.compare("abc") == -1);
+    REQUIRE(empty.compare(static_cast<const char*>(nullptr)) == 0);
+}
+
+TEST_CASE("XML_xerces_String: compareNoCase", "[xml][xml-xerces-string]")
+{
+    ensure_xerces();
+
+    XML_xerces_String s("AbC");
+
+    XML_xerces_String empty;
+    REQUIRE(empty.compareNoCase("abc") == -1);
+
+    REQUIRE(s.compareNoCase(static_cast<const char*>(nullptr)) == 1);
+    REQUIRE(s.compareNoCase("aBc") == 0);
+}
