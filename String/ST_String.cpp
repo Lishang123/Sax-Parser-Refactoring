@@ -31,13 +31,13 @@ ST_String::ST_String( std::string_view sv )
 }
 
 ST_String::ST_String( const char* s)
-    : m_String( s ? duplicate( s, strlen(s) + 1) : nullptr )
+    : m_String( s ? duplicate( s, strlen(s)) : nullptr )
 {
 }
 
 ST_String::ST_String(const ST_String& other)
 	: m_String(other.m_String
-		? duplicate(other.m_String, std::strlen(other.m_String) + 1)
+		? duplicate(other.m_String, other.length())
 		: nullptr)
 {
 }
