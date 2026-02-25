@@ -96,15 +96,12 @@ struct KVPairKeyComparator
 };
 }
 
-namespace std {
 template <>
-struct hash<ST_String> {
-    std::size_t operator()( ST_String const& text) const
-    {
-        return std::hash<std::string_view>{}( text.view() );
-    }
+struct std::hash<ST_String> {
+	std::size_t operator()( ST_String const& text) const {
+		return std::hash<std::string_view>{}( text.view() );
+	}
 };
-}
 
 inline std::size_t hash_value( const ST_String& text)
 {
@@ -112,19 +109,14 @@ inline std::size_t hash_value( const ST_String& text)
 	return hasher( text);
 }
 
-namespace fmt
-{
-
 template<>
-struct formatter<ST_String> : public formatter<std::string_view>
+struct fmt::formatter<ST_String> : formatter<std::string_view>
 {
-    template<typename FormatContext>
-    auto format( const ST_String &v, FormatContext &ctx ) const
-    {
-        return formatter<std::string_view>::format( v.view(), ctx );
-    }
-};
-
-} // namespace fmt
+	template<typename FormatContext>
+	auto format( const ST_String &v, FormatContext &ctx ) const
+	{
+		return formatter<std::string_view>::format( v.view(), ctx );
+	}
+}; // namespace fmt
 
 #endif
