@@ -54,15 +54,6 @@ TEST_CASE("FUSimpleReader parses tabfiles/simple.tab", "[repository][simple]") {
     // TY_Blob stores pointer+size (it copies here)
     TY_Blob blob(xml.data(), xml.size());
 
-    // try {
-    //     (void)spl::readRepo(blob, "simple.tab");
-    //     FAIL("Expected M_SystemMessage to be thrown");
-    // } catch (const M_SystemMessage& msg) {
-    //     std::cout << msg.getCode() << std::endl;
-    //     std::cout << msg.getDescription() << std::endl;
-    //     CHECK(std::string(msg.getCode()) == "lm::duplicated_function_id");
-    // }
-
     auto functions = spl::readRepo(blob, "simple.tab");
 
     REQUIRE(functions.size() == 4);
