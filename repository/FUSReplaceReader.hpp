@@ -18,7 +18,7 @@ namespace functions::repository::replace
 
     using Functions = std::vector<Function>;
 
-
+    Functions  readRepo_legacy( const TY_Blob &data, std::string_view repo );
     Functions  readRepo( const TY_Blob &data, std::string_view repo );
 
 }//namespace functions::repository::fus::replace

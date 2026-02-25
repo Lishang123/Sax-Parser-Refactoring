@@ -198,6 +198,11 @@ bool Reader::endElementChar( const char *, const char *, const char * )
 
 }//namespace
 
+Functions readRepo_legacy( const TY_Blob &data, std::string_view repo )
+{
+    return Reader {}.read( data, repo );
+}
+
 Functions readRepo( const TY_Blob &data, std::string_view repo )
 {
     // You can swap the reader used here.

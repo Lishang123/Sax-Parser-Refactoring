@@ -42,6 +42,7 @@ namespace functions::repository::simple
      * @return parsed functions.
      */
     Functions readRepo( const TY_Blob &data, std::string_view repo );
+    Functions  readRepo_legacy( const TY_Blob &data, std::string_view repo );
 
 }//namespace functions::repository::simple
 
