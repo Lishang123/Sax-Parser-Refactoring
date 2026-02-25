@@ -14,9 +14,9 @@ private:
 
 public:
     explicit M_SystemMessage( std::string_view domain, std::string_view code, std::string_view description );
-    const char* getDomain() const;
-    const char* getCode() const;
-    const char* getDescription() const;
+    [[nodiscard]] const char* getDomain() const;
+    [[nodiscard]] const char* getCode() const;
+    [[nodiscard]] const char* getDescription() const;
 };
 
 #endif //CPP_TASK_M_SYSTEMMESSAGE_HPP
