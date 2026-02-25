@@ -11,33 +11,17 @@ SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fsanitize=address")
 
 
 set(Sources
-        ./XML/XML_Parser.hpp
         ./XML/XML_Parser.cpp
-        ./XML/XML_xerces_String.hpp
         ./XML/XML_xerces_String.cpp
-        ./String/ST_String.hpp
         ./String/ST_String.cpp
-        ./String/generic.hpp
         ./Misc/M_SystemMessage.cpp
-        ./Misc/M_SystemMessage.hpp
-        ./Misc/SystemMessageError.hpp
-        ./Misc/M_MemoryStream.hpp
         ./Misc/M_MemoryStream.cpp
-        ./Misc/Memory.hpp
         ./Misc/Memory.cpp
-        ./Types/TY_Blob.hpp
         ./Types/TY_Blob.cpp
-        ./Types/TY_Base.hpp
         ./Types/TY_Base.cpp
-        ./repository/utils.hpp
         ./repository/utils.cpp
-        ./repository/FUSimpleReader.hpp
         ./repository/FUSimpleReader.cpp
-        ./repository/FUSReplaceReader.hpp
         ./repository/FUSReplaceReader.cpp
-        ./repository/generics/FUSReader.hpp
-        ./repository/generics/FUSpec.hpp
-        ./repository/specs/SimpleSpec.hpp
 )
 
 add_library(parser STATIC ${Sources})
