@@ -98,7 +98,7 @@ struct KVPairKeyComparator
 
 template <>
 struct std::hash<ST_String> {
-	std::size_t operator()( ST_String const& text) const {
+	std::size_t operator()( ST_String const& text) const noexcept {
 		return std::hash<std::string_view>{}( text.view() );
 	}
 };
