@@ -73,3 +73,15 @@ TEST_CASE("TY_Blob: copyContent unsigned underflow", "[Types][TY_Blob]")
     for (const char c : out) REQUIRE(c == 'A');
 }
 
+TEST_CASE("TY_Blob: setSize padding", "[Types][TY_Blob]")
+{
+    TY_Blob blob("ab");
+    REQUIRE(blob_view(blob) == "ab"sv);
+
+    blob.setSize(5, 'X'); // pad 3 'X'
+    REQUIRE(blob.getSize() == 5);
+
+    const auto v = blob_view(blob);
+    REQUIRE(v.size() == 5);
+    REQUIRE(v == "abXXX"sv);
+}
