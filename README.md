@@ -1,3 +1,14 @@
+# Notes for the reviewers
+All the refactors to the reader are implemented in FUSimpleReader.
+Since FUSReplaceReader is really similar to FUSimpleReader and 
+a template + spec files are added later, I intentionally 
+leave FUSReplaceReader partially unmodified to preserve the original 
+for testing purposes.
+
+And the generic template is the final version after the refactoring.
+
+---------
+
 # Provided project files
 Contained files are extracted from a real-world project, though with some
 alterations to reduce dependencies.
