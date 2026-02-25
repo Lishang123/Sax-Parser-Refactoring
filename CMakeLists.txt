@@ -21,8 +21,13 @@ set(Sources
 
 add_library(parser STATIC ${Sources})
 
-target_compile_options(parser PUBLIC -fsanitize=address -fno-omit-frame-pointer)
-target_link_options(parser PUBLIC -fsanitize=address)
+target_include_directories(parser
+        PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}
+)
+
+target_compile_options(parser PRIVATE -fsanitize=address -fno-omit-frame-pointer)
+target_link_options(parser PRIVATE -fsanitize=address)
 
 include(FetchContent)
 
