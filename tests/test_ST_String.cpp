@@ -2,6 +2,33 @@
 
 #include "../String/ST_String.hpp"
 
+TEST_CASE("ST_String: default is empty/null", "[String][st_string]")
+{
+    const ST_String s;
+    REQUIRE(s.c_str() == nullptr);
+    REQUIRE(s.isEmpty());
+    REQUIRE(s.length() == 0);
+    REQUIRE(s.view().empty());
+}
+
+TEST_CASE("ST_String: constructs from C string")
+{
+    const ST_String s("hello");
+    REQUIRE_FALSE(s.isEmpty());
+    REQUIRE(s.length() == 5);
+    REQUIRE(s.view() == "hello");
+    REQUIRE(std::strcmp(s.c_str(), "hello") == 0);
+}
+
+
+TEST_CASE("ST_String: constructs from string_view")
+{
+    std::string_view sv = "hello";
+    ST_String s(sv);
+    REQUIRE(s.view() == sv);
+    REQUIRE(s.length() == sv.size());
+}
+
 
 TEST_CASE("ST_String: copy of default-constructed is null-safe", "[String][st_string]") {
     ST_String a;
