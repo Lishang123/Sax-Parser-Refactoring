@@ -15,6 +15,9 @@ namespace M::Memory
 	 void* allocate( size_t Size);
 	 void* callocate( size_t Size, size_t Count);
 
+	template<typename T>
+	concept RawAllocatable = std::is_trivially_constructible_v<T> && std::is_trivially_destructible_v<T>;
+
 	/**
 	 * Allocates memory for some arbitrary number of elements.
 	 *
@@ -25,26 +28,36 @@ namespace M::Memory
 	 * @example M_Memory::allocate<int>( 2) allocates continous memory fragment for 2 integers.
 	 * @returns A pointer to allocated memory
 	 */
-	template<typename ElementType>
-	ElementType* allocate( size_t Size)
+	template<RawAllocatable ElementType>
+	ElementType* allocate( size_t Count)
 	{
-		return static_cast<ElementType*>( allocate( Size * sizeof( ElementType)));
+		//Size * sizeof(ElementType) can overflow size_t
+		 if (Count > std::numeric_limits<size_t>::max() / sizeof(ElementType))
+		 {
+		 	outOfMemoryHandler();
+		 }
+		return static_cast<ElementType*>( allocate( Count * sizeof( ElementType)));
 	}
 
 	/**
 	 * Allocates memory for some arbitrary number of elements and initialize memory with zero.
 	 *
-	 * @param Size Number of elements we are allocating memory for
+	 * @param Count Number of elements we are allocating memory for
 	 * @tparam ElementType  The type of element we are allocating memory for. This is also
 	 *						the resulting pointer type.
 	 *
 	 * @example M_Memory::allocate<int>( 2) allocates continous memory fragment for 2 integers.
 	 * @returns A pointer to allocated memory
 	 */
-	template<typename ElementType>
-	ElementType* callocate( size_t Size)
+	template<RawAllocatable ElementType>
+	ElementType* callocate( size_t Count)
 	{
-		return static_cast<ElementType*>( callocate( Size, sizeof( ElementType)));
+		//Size * sizeof(ElementType) can overflow size_t
+		if (Count > std::numeric_limits<size_t>::max() / sizeof(ElementType))
+		{
+			outOfMemoryHandler();
+		}
+		return static_cast<ElementType*>( callocate( sizeof( ElementType), Count));
 	}
 
 	 void* reAllocate( void* OldBuffer, size_t Size);
