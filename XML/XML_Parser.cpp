@@ -32,7 +32,7 @@ namespace core::xml
         {
             const char* content {};
             auto size { m_content.getSize() };
-            m_content.getContent(&content);
+            m_content.getContent(&content, nullptr);
             return new(getMemoryManager()) xercesc::BinMemInputStream {
                     reinterpret_cast<const XMLByte*>( content ),
                     size,
@@ -453,7 +453,7 @@ M_SystemMessage XML_Parser::systemMessageFromException( const xercesc::SAXParseE
     }
     Location.terminate();
     const char* LocationString;
-    Location.getContent( &LocationString);
+    Location.getContent( &LocationString, nullptr);
 
     return M_SystemMessage {
             "XMLLM_DOMAIN", Code,

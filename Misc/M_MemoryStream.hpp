@@ -69,7 +69,7 @@ class  IReadStream
 		  * @param content Store pointer to buffer here.
 		  * @param size Store size of buffer here.
 		  */
-		virtual void getContent( const char** content, T_uint64* size = nullptr) const = 0;
+		virtual void getContent( const char** content, T_uint64* size) const = 0;
 
 		/** Get internal buffer. */
 		[[nodiscard]] virtual const TY_Blob* getContent() const = 0;
@@ -97,7 +97,7 @@ class  ConstantReadStream : public M::IReadStream
 		ConstantReadStream( const TY_Blob* buffer) : m_content( buffer ? buffer : &m_placeholder), m_readPosition( 0) {}
 
 		T_uint64 read( char* Content, T_uint64 Size) const override;
-		void getContent( const char** content, T_uint64* size = nullptr) const override;
+		void getContent( const char** content, T_uint64* size) const override;
 		const TY_Blob* getContent() const override { return m_content; }
 		T_uint64 getSize() const override { return m_content ? m_content->getSize() : 0; }
 
@@ -178,7 +178,7 @@ class  M_MemoryStream : public M::IReadStream
 		  * @param Content Store pointer to buffer here.
 		  * @param Size Store size of buffer here.
 		  */
-		void getContent( const char** Content, T_uint64* Size = nullptr) const override;
+		void getContent( const char** Content, T_uint64* Size) const override;
 
 		/** Get ownership of internal content. The memory stream will be empty but still usable
 		  * afterwards. Make sure to remove the content with M_Memory::release().
