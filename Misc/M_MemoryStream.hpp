@@ -163,13 +163,6 @@ class  M_MemoryStream : public M::IReadStream
 		  */
 		void writeConsume( char* Content, T_uint64 Size);
 
-		/** Write a null terminated string into the stream at the given position. The null will NOT
-		  * be written into the stream, only the string content. The offset is measered in bytes,
-		  * not characters.
-		  * @param String The content to add.
-		  * @param Offset The offset of the content.
-		  */
-
 		/** Terminate the content with 0. This is necessary when M_MemoryStream is used to build
 		  * strings. */
 		void terminate();
@@ -198,10 +191,6 @@ class  M_MemoryStream : public M::IReadStream
 		  * afterwards. Make sure to remove the content on your own. */
 		TY_Blob detachContent();
 
-		/** Set size of stream.
-		  * @param Size New stream size.
-		  * @param Padding Value to pad with if size grows.
-		  */
 		/** Return size of stream. */
 		T_uint64 getSize() const override;
 
