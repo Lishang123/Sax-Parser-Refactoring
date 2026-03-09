@@ -45,8 +45,8 @@ class M_MemoryStreamFragment
 
 		void append( const char* Content, T_uint64 Size);
 
-		T_uint64 getSize() const;
-		T_uint64 getFreeSize() const;
+		[[nodiscard]] T_uint64 getSize() const;
+		[[nodiscard]] T_uint64 getFreeSize() const;
 
 		T_uint64 getContent( const char** Content) const;
 };
@@ -72,10 +72,10 @@ class  IReadStream
 		virtual void getContent( const char** content, T_uint64* size = nullptr) const = 0;
 
 		/** Get internal buffer. */
-		virtual const TY_Blob* getContent() const = 0;
+		[[nodiscard]] virtual const TY_Blob* getContent() const = 0;
 
 		/** Return size of stream. */
-		virtual T_uint64 getSize() const = 0;
+		[[nodiscard]] virtual T_uint64 getSize() const = 0;
 
 		/** Sets the read pointer.
 		 * @param offset The new offset in the buffer. Counted from origin.
@@ -83,7 +83,7 @@ class  IReadStream
 		 * @return Whether the pointer has been reset.
 		 */
 		bool setReadPosition( T_int64 offset, int origin = SEEK_SET );
-		virtual T_uint64 getReadPosition() const = 0;
+		[[nodiscard]] virtual T_uint64 getReadPosition() const = 0;
 
 	private:
 		virtual void m_setReadPosition( T_uint64 newPos ) = 0;
