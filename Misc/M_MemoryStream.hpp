@@ -96,12 +96,12 @@ class  ConstantReadStream : public M::IReadStream
 		ConstantReadStream() = delete;
 		ConstantReadStream( const TY_Blob* buffer) : m_content( buffer ? buffer : &m_placeholder), m_readPosition( 0) {}
 
-		T_uint64 read( char* Content, T_uint64 Size) const;
-		void getContent( const char** content, T_uint64* size = nullptr) const;
-		const TY_Blob* getContent() const { return m_content; }
-		T_uint64 getSize() const { return m_content ? m_content->getSize() : 0; }
+		T_uint64 read( char* Content, T_uint64 Size) const override;
+		void getContent( const char** content, T_uint64* size = nullptr) const override;
+		const TY_Blob* getContent() const override { return m_content; }
+		T_uint64 getSize() const override { return m_content ? m_content->getSize() : 0; }
 
-		T_uint64 getReadPosition() const;
+		T_uint64 getReadPosition() const override;
 	private:
 		const TY_Blob* m_content;
 		mutable T_uint64 m_readPosition;
@@ -178,13 +178,13 @@ class  M_MemoryStream : public M::IReadStream
 		  * @param Content Put stuff here.
 		  * @param Size How much you want to read.
 		  */
-		T_uint64 read( char* Content, T_uint64 Size) const;
+		T_uint64 read( char* Content, T_uint64 Size) const override;
 
 		/** Get access to internal content.
 		  * @param Content Store pointer to buffer here.
 		  * @param Size Store size of buffer here.
 		  */
-		void getContent( const char** Content, T_uint64* Size = nullptr) const;
+		void getContent( const char** Content, T_uint64* Size = nullptr) const override;
 
 		/** Get ownership of internal content. The memory stream will be empty but still usable
 		  * afterwards. Make sure to remove the content with M_Memory::release().
@@ -193,7 +193,7 @@ class  M_MemoryStream : public M::IReadStream
 		  */
 		void detachContent( char** Content, T_uint64* Size = nullptr);
 		/** Get internal buffer. */
-		const TY_Blob* getContent() const;
+		const TY_Blob* getContent() const override;
 		/** Get ownership of internal content. The memory stream will be empty but still usable
 		  * afterwards. Make sure to remove the content on your own. */
 		TY_Blob detachContent();
@@ -203,12 +203,12 @@ class  M_MemoryStream : public M::IReadStream
 		  * @param Padding Value to pad with if size grows.
 		  */
 		/** Return size of stream. */
-		T_uint64 getSize() const;
+		T_uint64 getSize() const override;
 
 		/** Reset stream. */
 		void reset();
 
-        T_uint64 getReadPosition() const;
+        T_uint64 getReadPosition() const override;
 
 		bool hasUnflushedContent() { return m_UnflushedContent.size() > 0; }
 private:
