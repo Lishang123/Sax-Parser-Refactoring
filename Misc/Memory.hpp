@@ -25,7 +25,7 @@ namespace M::Memory
 	 * @tparam ElementType  The type of element we are allocating memory for. This is also
 	 *						the resulting pointer type.
 	 *
-	 * @example M_Memory::allocate<int>( 2) allocates continous memory fragment for 2 integers.
+	 * @example M_Memory::allocate<int>( 2) allocates continuous memory fragment for 2 integers.
 	 * @returns A pointer to allocated memory
 	 */
 	template<RawAllocatable ElementType>
@@ -46,7 +46,7 @@ namespace M::Memory
 	 * @tparam ElementType  The type of element we are allocating memory for. This is also
 	 *						the resulting pointer type.
 	 *
-	 * @example M_Memory::allocate<int>( 2) allocates continous memory fragment for 2 integers.
+	 * @example M_Memory::allocate<int>( 2) allocates continuous memory fragment for 2 integers.
 	 * @returns A pointer to allocated memory
 	 */
 	template<RawAllocatable ElementType>
@@ -102,6 +102,7 @@ namespace M::Memory
 
      /**
       * This handler only handles new failures.
+      * better: installNewHandler()
       */
      void installOutOfMemoryHandler();
 
