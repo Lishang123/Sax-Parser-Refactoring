@@ -21,7 +21,7 @@ namespace M::Memory
 	/**
 	 * Allocates memory for some arbitrary number of elements.
 	 *
-	 * @param Size Number of elements we are allocating memory for
+	 * @param Count Number of elements we are allocating memory for
 	 * @tparam ElementType  The type of element we are allocating memory for. This is also
 	 *						the resulting pointer type.
 	 *
