@@ -81,7 +81,8 @@ class  TY_Blob final : public TY_Base
 		  * @param size Copy this number of bytes.
 		  */
 		T_uint64 copyContent( char* buffer, T_uint64 offset, T_uint64 size) const;
-		/** Set new content. This makes a copy of the new content.
+		/** Set new content. This makes a copy of the new content. The terminating 0 will
+		  * not be copied.
 		  * @param content New content.
 		  */
 		void setContent( const char* content);
@@ -89,8 +90,7 @@ class  TY_Blob final : public TY_Base
 		  * @param content New content.
 		  */
 		void setContent( const TY_Blob* content);
-		/** Set new content and size. This makes a copy of the new content. The terminating 0 will
-		  * not be copied.
+		/** Set new content and size. This makes a copy of the new content.
 		  * @param content New content.
 		  * @param size Size of new content.
 		  */
