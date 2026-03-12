@@ -148,6 +148,41 @@ TEST_CASE("M_MemoryStream::write(const char* Content, T_uint64 Size) reuses last
 }
 
 
+TEST_CASE("M_MemoryStream::writeConsume(char* Content, T_uint64 Size) reuses last fragment", "[misc][memoryStream]")
+{
+    M_MemoryStream stream;
+
+    // First write: Size < FRAGMENT_SIZE => new fragment allocates FRAGMENT_SIZE*2
+    constexpr T_uint64 first_size = FRAGMENT_SIZE - 1;
+    std::string str_a(first_size, 'A');
+    stream.write(str_a.data(), first_size);
+
+    REQUIRE(stream.m_UnflushedContent.size() == 1);
+
+    const T_uint64 free_size = stream.m_UnflushedContent.back().getFreeSize();
+    REQUIRE(free_size > 0);
+
+    // create a consumed buffer of exactly free size
+    char* str_b = M::Memory::allocate<char>(free_size);
+    std::memset(str_b, 'N', free_size);
+
+    // Second write: try to exactly fill the free space in the first fragment，and release b
+    stream.writeConsume(str_b, free_size);
+
+    // In the original implementation, a new fragment is created even if the old fragment can store the new content
+    REQUIRE(stream.m_UnflushedContent.size() == 1);
+
+    // The result after flush should be the correct concatenation
+    const char* p = nullptr;
+    T_uint64 n = 0;
+    stream.getContent(&p, &n); // call flush
+
+    REQUIRE(n == first_size + free_size);
+    REQUIRE(std::string_view{p, first_size} == std::string_view{str_a});
+    REQUIRE(std::string_view{p + first_size, free_size} == std::string_view{std::string(free_size, 'N')});
+}
+
+
 TEST_CASE("M_MemoryStream::write(long)","[misc][memoryStream]")
 {
     M_MemoryStream stream;
