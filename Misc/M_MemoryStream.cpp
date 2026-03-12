@@ -368,7 +368,7 @@ void M_MemoryStream::writeConsume( char* Content, T_uint64 Size)
 		return;
 	}
 
-	if( hasUnflushedContent() && m_lastUnflushed().getFreeSize() > Size)
+	if( hasUnflushedContent() && m_lastUnflushed().getFreeSize() >= Size)
 	{
 		m_lastUnflushed().append( Content, Size);
 		M::Memory::release( Content);
