@@ -123,7 +123,7 @@ class  M_MemoryStream : public M::IReadStream
 		M_MemoryStream( const M_MemoryStream& src) = delete;
 		M_MemoryStream( M_MemoryStream&& src) noexcept;
 		M_MemoryStream( const char* String);
-		M_MemoryStream( const TY_Blob* Buffer);
+		M_MemoryStream( const TY_Blob* Content);
 
 		~M_MemoryStream() override = default;
 
@@ -207,8 +207,8 @@ class  M_MemoryStream : public M::IReadStream
 
 		bool hasUnflushedContent() const { return !m_UnflushedContent.empty(); }
 private:
-		typedef std::deque<M_MemoryStreamFragment> Unflusched_t;
-		mutable Unflusched_t m_UnflushedContent;
+		typedef std::deque<M_MemoryStreamFragment> Unflushed_t;
+		mutable Unflushed_t m_UnflushedContent;
 		mutable TY_Blob m_Content;
 
 		mutable T_uint64 m_ReadPosition;
