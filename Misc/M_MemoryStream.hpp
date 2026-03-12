@@ -152,7 +152,8 @@ class  M_MemoryStream : public M::IReadStream
 		  * @param Content Buffer to add to this stream.
 		  */
 		void write( const TY_Blob* Content);
-		void write( long Content);
+		void write_legacy( long Content);
+		void write( long value);
 		void write( const std::string& String);
 		void write( const ST_String& String);
 		void writeConsume( TY_Blob* Content);		

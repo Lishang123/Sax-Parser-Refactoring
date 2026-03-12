@@ -254,16 +254,24 @@ void M_MemoryStream::flush() const
 	m_Size = m_Content.getSize();
 }
 
-void M_MemoryStream::write( long Content)
+void M_MemoryStream::write_legacy( long Content)
 {
 	char buffer[21];
 	int size = snprintf( buffer, 21, "%ld", Content);
 	//write( buffer, size); (original)
 	if (size <= 0) return;
-	// just in case size > 20
+	// just in case size > 20 (should not happen since 21 is large enough for long)
 	T_uint64 sizeToWrite = static_cast<T_uint64>(std::min<int>(size, sizeof(buffer) - 1));
 
 	write( buffer, sizeToWrite);
+}
+
+void M_MemoryStream::write(long value)
+{
+	char buffer[21];
+	auto [ptr, ec] = std::to_chars(buffer, buffer + sizeof(buffer), value);
+	if (ec == std::errc())
+		write(buffer, ptr - buffer);
 }
 
 void M_MemoryStream::write(const std::string &String)
