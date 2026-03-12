@@ -418,9 +418,9 @@ TY_Blob M_MemoryStream::detachContent()
 
 	m_ReadPosition = 0;
 	m_Size = 0;
-
+	// This calls the move constructor of TY_Blob.
 	TY_Blob result = std::move( m_Content);
-
+	// so calling reset here is unnecessary here because the move constructor is already clean.
 	m_Content.reset(); // like new! ;)
 
 	return result;
