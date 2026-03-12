@@ -47,6 +47,11 @@ class M_MemoryStreamFragment
 		[[nodiscard]] T_uint64 getSize() const;
 		[[nodiscard]] T_uint64 getFreeSize() const;
 
+		/**
+		 * Write the data of the fragment into Content.
+		 * @param Content pointer to the buffer to be overwritten
+		 * @return the size of the data in the fragment
+		 */
 		T_uint64 getContent( const char** Content) const;
 };
 
@@ -98,6 +103,7 @@ class  ConstantReadStream : public M::IReadStream
 		T_uint64 read( char* Content, T_uint64 Size) const override;
 		void getContent( const char** content, T_uint64* size) const override;
 		const TY_Blob* getContent() const override { return m_content; }
+		// nullptr check is unnecessary since const m_content is never nullptr.
 		T_uint64 getSize() const override { return m_content ? m_content->getSize() : 0; }
 
 		T_uint64 getReadPosition() const override;
