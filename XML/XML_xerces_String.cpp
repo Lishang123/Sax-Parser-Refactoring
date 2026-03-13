@@ -111,6 +111,9 @@ XMLCh* XML_xerces_String::convertToXMLForm( const char* LocalForm)
 char* XML_xerces_String::convertToLocalForm( const XMLCh* XMLForm) const
 {
 	// If we have an input of more than 64k, this might fail badly.
+	if (!XMLForm)
+		return M::Memory::create(0);
+
 	if( m_Transcoder)
 	{
 		const XMLSize_t CharsAvailable = xercesc::XMLString::stringLen( XMLForm);
