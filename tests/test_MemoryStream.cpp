@@ -173,13 +173,13 @@ TEST_CASE("M_MemoryStream::writeConsume(char* Content, T_uint64 Size) reuses las
     REQUIRE(stream.m_UnflushedContent.size() == 1);
 
     // The result after flush should be the correct concatenation
-    const char* p = nullptr;
-    T_uint64 n = 0;
-    stream.getContent(&p, &n); // call flush
+    const char* res_ptr = nullptr;
+    T_uint64 res_size = 0;
+    stream.getContent(&res_ptr, &res_size); // call flush
 
-    REQUIRE(n == first_size + free_size);
-    REQUIRE(std::string_view{p, first_size} == std::string_view{str_a});
-    REQUIRE(std::string_view{p + first_size, free_size} == std::string_view{std::string(free_size, 'N')});
+    REQUIRE(res_size == first_size + free_size);
+    REQUIRE(std::string_view{res_ptr, first_size} == std::string_view{str_a});
+    REQUIRE(std::string_view{res_ptr + first_size, free_size} == std::string_view{std::string(free_size, 'N')});
 }
 
 
