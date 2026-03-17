@@ -134,7 +134,6 @@ TEMPLATE_TEST_CASE("XML_Parser accepts valid attribute value", "[xml][parser][at
     TY_Blob blob(xml, std::strlen(xml));
 
     auto parser = makeParser<TestType>();
-    parser.parseBlob(&blob);
     REQUIRE(parser.parseBlob(&blob));
     REQUIRE(parser.attrLongExists);
     REQUIRE(parser.attrValueLong == 1000);
@@ -149,7 +148,6 @@ TEMPLATE_TEST_CASE("XML_Parser ignores no attribute", "[xml][parser][attr][long]
     TY_Blob blob(xml, std::strlen(xml));
 
     AttrTestParserLegacy parser;
-    parser.parseBlob(&blob);
     REQUIRE(parser.parseBlob(&blob));
     REQUIRE_FALSE(parser.attrLongExists);
     REQUIRE_FALSE(parser.attrValueLong);
@@ -164,7 +162,6 @@ TEMPLATE_TEST_CASE("XML_Parser rejects invalid attribute value", "[xml][parser][
     TY_Blob blob(xml, std::strlen(xml));
 
     auto parser = makeParser<TestType>();
-    parser.parseBlob(&blob);
     REQUIRE(parser.parseBlob(&blob));
     REQUIRE_FALSE(parser.attrLongExists); // fail for original implementation
     REQUIRE_FALSE(parser.attrValueLong);
@@ -179,7 +176,6 @@ TEMPLATE_TEST_CASE("XML_Parser ignores empty attribute value", "[xml][parser][at
     TY_Blob blob(xml, std::strlen(xml));
 
     auto parser = makeParser<TestType>();
-    parser.parseBlob(&blob);
     REQUIRE(parser.parseBlob(&blob));
     REQUIRE_FALSE(parser.attrLongExists); // fail for original implementation
     REQUIRE_FALSE(parser.attrValueLong);
@@ -194,7 +190,6 @@ TEMPLATE_TEST_CASE("XML_Parser parses boolean attribute", "[xml][parser][attr][b
     TY_Blob blob(xml, std::strlen(xml));
 
     auto parser = makeParser<TestType>();
-    parser.parseBlob(&blob);
     REQUIRE(parser.parseBlob(&blob));
     REQUIRE(parser.attrBoolExists);
     REQUIRE(parser.attrValueBool);
@@ -209,7 +204,6 @@ TEMPLATE_TEST_CASE("XML_Parser parses empty (boolean) attribute", "[xml][parser]
     TY_Blob blob(xml, std::strlen(xml));
 
     auto parser = makeParser<TestType>();
-    parser.parseBlob(&blob);
     REQUIRE(parser.parseBlob(&blob));
     REQUIRE_FALSE(parser.attrBoolExists);
     REQUIRE_FALSE(parser.attrValueBool);
@@ -224,7 +218,6 @@ TEMPLATE_TEST_CASE("XML_Parser parses invalid boolean attribute", "[xml][parser]
     TY_Blob blob(xml, std::strlen(xml));
 
     auto parser = makeParser<TestType>();
-    parser.parseBlob(&blob);
     REQUIRE(parser.parseBlob(&blob));
     REQUIRE_FALSE(parser.attrBoolExists);
     REQUIRE_FALSE(parser.attrValueBool);
@@ -239,7 +232,6 @@ TEST_CASE("XML_Parser parses text attribute", "[xml][parser][attr][value]") {
     TY_Blob blob(xml, std::strlen(xml));
 
     auto parser = AttrTestParserLegacy{};
-    parser.parseBlob(&blob);
     REQUIRE(parser.parseBlob(&blob));
     REQUIRE(parser.attrValue == "description");
 }
@@ -253,7 +245,6 @@ TEST_CASE("XML_Parser parses empty text attribute", "[xml][parser][attr][value]"
     TY_Blob blob(xml, std::strlen(xml));
 
     auto parser = AttrTestParserLegacy{};
-    parser.parseBlob(&blob);
     REQUIRE(parser.parseBlob(&blob));
     REQUIRE(parser.attrValue == "");
 }
@@ -267,7 +258,6 @@ TEST_CASE("XML_Parser parses non-existing attribute", "[xml][parser][attr][value
     TY_Blob blob(xml, std::strlen(xml));
 
     auto parser = AttrTestParserLegacy{};
-    parser.parseBlob(&blob);
     REQUIRE(parser.parseBlob(&blob));
     REQUIRE(parser.attrValue == "");
 }
