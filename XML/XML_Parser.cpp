@@ -273,7 +273,7 @@ void XML_Parser::startElement( const XMLCh* const URI, const XMLCh* const Name,
     endCharacters( );
 
 
-    m_Callstack.push_back( { std::move( LocalURI ), std::move( LocalName ), std::move( LocalQName ) });
+    m_Callstack.emplace_back( std::move( LocalURI ), std::move( LocalName ), std::move( LocalQName ) );
 
 
     auto& el = m_Callstack.back();
