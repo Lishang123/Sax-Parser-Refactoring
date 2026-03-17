@@ -266,7 +266,7 @@ void XML_Parser::startElement( const XMLCh* const URI, const XMLCh* const Name,
     LocalName.consume( m_UseNamespaces
                        ? m_xercesString.convertToLocalForm( Name )
                        // ST_String guarantees NUL termination
-                       // duplicate copies to size + 1 and ensures NUL termination
+                       // duplicate copies to size + 1 and ensures NUL termination so no need for passing strlen()+1
                        : M::Memory::duplicate( LocalQName.c_str(), strlen( LocalQName.c_str() ) ) );
 
 
@@ -316,7 +316,6 @@ void XML_Parser::characters(const XMLCh* const Characters, const XMLSize_t Lengt
     // Length is not used?
     char* LocalCharacters = m_xercesString.convertToLocalForm( Characters);
 
-    // TODO: XML character data cannot contain '\0' in XML 1.0, otherwise I have to make sure.
     m_CharacterBuffer.writeConsume( LocalCharacters);
 }
 
