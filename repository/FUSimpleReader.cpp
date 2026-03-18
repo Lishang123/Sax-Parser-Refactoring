@@ -63,7 +63,7 @@ void Reader::errorMessage( const M_SystemMessage &message )
  * @param name: The name of the element.
  * @return: The element enum defined in the reader.
  */
-Reader::Element Reader::toElement( std::string_view name )
+Reader::Element Reader::toElement(const std::string_view name )
 {
     auto lowerCaseName = utils::lowercaseUntilCamelBoundary( name );
 
@@ -85,7 +85,7 @@ Reader::Element Reader::toElement( std::string_view name )
  * @param repo the repo label for error messages
  * @return functions parsed
  */
-Functions Reader::read( const TY_Blob &data, std::string_view repo ) &&
+Functions Reader::read( const TY_Blob &data, const std::string_view repo ) && // ref-value qualifier
 {
     // stores repo label for diagnostics
     m_repository.set( repo );
