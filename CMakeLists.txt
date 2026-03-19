@@ -32,14 +32,13 @@ target_sources(parser PRIVATE
         Misc/SystemMessageError.hpp
         Misc/M_MemoryStream.hpp
         Misc/Memory.hpp
-        Misc/SystemMessageError.hpp
+        repository/utils.hpp
         repository/FUSimpleReader.hpp
         repository/FUSReplaceReader.hpp
         repository/generics/FUSpec.hpp
         repository/generics/FUSReader.hpp
         repository/specs/SimpleSpec.hpp
         repository/specs/ReplaceSpec.hpp
-        repository/utils.hpp
         String/generic.hpp
         String/ST_String.hpp
         tests/XercesGuard.hpp
