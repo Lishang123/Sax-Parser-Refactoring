@@ -28,6 +28,7 @@ target_include_directories(parser
 )
 
 target_sources(parser PRIVATE
+        Misc/M_SystemMessage.hpp
         Misc/SystemMessageError.hpp
         Misc/M_MemoryStream.hpp
         Misc/Memory.hpp
