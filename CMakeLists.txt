@@ -27,6 +27,25 @@ target_include_directories(parser
         ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
+target_sources(parser PRIVATE
+        Misc/SystemMessageError.hpp
+        Misc/M_MemoryStream.hpp
+        Misc/Memory.hpp
+        Misc/SystemMessageError.hpp
+        repository/FUSimpleReader.hpp
+        repository/FUSReplaceReader.hpp
+        repository/generics/FUSpec.hpp
+        repository/generics/FUSReader.hpp
+        repository/specs/SimpleSpec.hpp
+        repository/specs/ReplaceSpec.hpp
+        repository/utils.hpp
+        String/generic.hpp
+        String/ST_String.hpp
+        tests/XercesGuard.hpp
+        Types/TY_Base.hpp
+        Types/TY_Blob.hpp
+)
+
 target_compile_options(parser PRIVATE -fsanitize=address -fno-omit-frame-pointer)
 target_link_options(parser PRIVATE -fsanitize=address)
 
