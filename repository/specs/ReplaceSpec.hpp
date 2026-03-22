@@ -20,8 +20,8 @@ struct ReplaceSpec {
 
     static constexpr Element documentRoot() { return Element::document; }
 
-    static constexpr std::string_view elementName(const Element e) {
-        switch (e) {
+    static constexpr std::string_view elementName(const Element element) {
+        switch (element) {
             case Element::functions: return "Functions"sv;
             case Element::function:  return "Function"sv;
             case Element::id:        return "ID"sv;
@@ -43,13 +43,13 @@ struct ReplaceSpec {
         return Element::unknown;
     }
 
-    static bool isKnown(const Element e) { return e != Element::unknown; }
+    static bool isKnown(const Element element) { return element != Element::unknown; }
 
-    static std::span<Element> allowedChildren(const Element p) {
-        static Element doc[]  = { Element::functions };
-        static Element funcs[] = { Element::function };
-        static Element func[]  = { Element::id, Element::source, Element::pattern, Element::replacement };
-        switch (p) {
+    static std::span<const Element> allowedChildren(const Element parent) {
+        static constexpr Element doc[]  = { Element::functions };
+        static constexpr Element funcs[] = { Element::function };
+        static constexpr Element func[]  = { Element::id, Element::source, Element::pattern, Element::replacement };
+        switch (parent) {
             case Element::document:  return doc;
             case Element::functions: return funcs;
             case Element::function:  return func;
@@ -61,10 +61,10 @@ struct ReplaceSpec {
         }
     }
 
-    static void onText(const Element e, const char* text, Result& out, State& state, std::string_view repo) {
+    static void onText(const Element element, const char* text, Result& out, State& state, std::string_view repo) {
         using Function = functions::repository::replace::Function;
 
-        if (e == Element::id) {
+        if (element == Element::id) {
             // duplicate check
             if (auto it = std::ranges::find_if(out,
                 [text](const Function& f){ return !std::strcmp(text, f.id.c_str()); });
@@ -78,14 +78,14 @@ struct ReplaceSpec {
             out[*state.current].id.set(text);
             return;
         }
-        if (e == Element::source || e == Element::pattern || e == Element::replacement) {
+        if (element == Element::source || element == Element::pattern || element == Element::replacement) {
             if (!state.current) {
                 utils::fatal("lm::other_function_child_before_id",
-                         fmt::format("Found <{}> before <ID> while parsing {}.", elementName(e), repo));
+                         fmt::format("Found <{}> before <ID> while parsing {}.", elementName(element), repo));
             }
-            if ( e == Element::source )
+            if ( element == Element::source )
                 out[*state.current].source.set(text);
-            else if( e == Element::pattern )
+            else if( element == Element::pattern )
                 out[*state.current].pattern.set(text);
             else
                 out[*state.current].replacement.set(text);
