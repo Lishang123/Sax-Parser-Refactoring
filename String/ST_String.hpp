@@ -10,21 +10,23 @@
 #include <vector>
 #include <type_traits>
 #include <fmt/format.h>
+#include <Misc/Memory.hpp>
 
 class ST_String
 {
 	private:
-		char* m_String;
+	M::Memory::unique_ptr<char[]> m_String;
 
 	public:
-		ST_String();
+
+		ST_String() = default;
 		explicit ST_String( const char* s);
 		ST_String( const char* s, size_t len);
 		explicit ST_String( std::string_view sv );
 
 		ST_String( const ST_String& other);
 		ST_String( ST_String&& other ) noexcept;
-		~ST_String();
+		~ST_String() = default;
 
 		ST_String& operator=( const char* s);
 		ST_String& operator=( std::string_view sv);
@@ -61,7 +63,7 @@ class ST_String
 		// preserve reference and cv qualifiers using decltype
 		template<typename Functor>
 		decltype(auto) modifyInPlace( Functor&& f ) {
-			return std::invoke(std::forward<Functor>(f), m_String);
+			return std::invoke(std::forward<Functor>(f), m_String.get());
 		};
 };
 

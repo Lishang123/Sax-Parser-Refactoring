@@ -7,51 +7,38 @@
 
 using namespace M::Memory;
 
-#include <cstring>
-#include <cstdarg>
 #include <cassert>
 
 using namespace M::String;
 
 static constexpr size_t npos = static_cast<size_t>(-1);
 
-ST_String::ST_String()
-         : m_String( nullptr)
-{
-}
-
 ST_String::ST_String( const char* s, size_t len)
-    : m_String( duplicate(s, len ) )
+    : m_String( duplicateUniqueString(s, len ) )
 {
 }
 
 ST_String::ST_String( std::string_view sv )
-    : m_String( duplicate( sv.data(), sv.size() ) )
+    : m_String( duplicateUniqueString( sv.data(), sv.size() ) )
 {
 }
 
 ST_String::ST_String( const char* s)
-    : m_String( s ? duplicate( s, strlen(s)) : nullptr )
+    : m_String( s ? duplicateUniqueString( s, strlen(s)) : nullptr )
 {
 }
 
 ST_String::ST_String(const ST_String& other)
 	: m_String(other.m_String
-		? duplicate(other.m_String, other.length())
+		? duplicateUniqueString(other.c_str(), other.length())
 		: nullptr)
 {
 }
 
 ST_String::ST_String( ST_String&& other) noexcept
-    : m_String( other.m_String)
-{
-	other.m_String = nullptr;
-}
+    : m_String( std::move(other.m_String))
+{}
 
-ST_String::~ST_String()
-{
-    release( m_String );
-}
 
 ST_String& ST_String::operator=( const char* s)
 {
@@ -71,7 +58,7 @@ ST_String& ST_String::operator=( const ST_String& rhs)
 	if( this != &rhs)
 	{
 		assert( !m_String || m_String != rhs.m_String);
-		set( rhs.m_String);
+		set( rhs.m_String.get());
 	}
 
 	return( *this);
@@ -81,7 +68,7 @@ ST_String& ST_String::operator=( ST_String&& rhs)
  noexcept {
 	if( this != &rhs)
 	{
-		consume( std::exchange(rhs.m_String, nullptr));
+		m_String = std::move(rhs.m_String);
 	}
 
 	return *this;
@@ -89,12 +76,12 @@ ST_String& ST_String::operator=( ST_String&& rhs)
 
 const char* ST_String::c_str() const noexcept
 {
-	return m_String;
+	return m_String.get();
 }
 
 std::string_view ST_String::view() const noexcept
 {
-	return m_String ? std::string_view{m_String} : std::string_view{};
+	return m_String ? std::string_view{m_String.get()} : std::string_view{};
 }
 
 bool ST_String::isEmpty() const
@@ -104,19 +91,17 @@ bool ST_String::isEmpty() const
 
 size_t ST_String::length() const
 {
-	return m_String ? strlen( m_String) : 0;
+	return m_String ? strlen( m_String.get()) : 0;
 }
 
 void ST_String::reset()
 {
-    release(m_String);
-	m_String = nullptr;
+    m_String.reset();
 }
 
 void ST_String::consume( char* s)
 {
-    release(m_String);
-	m_String = s;
+    m_String.reset( s);
 }
 
 void ST_String::set( const char* s)
@@ -145,7 +130,7 @@ void ST_String::set( const char* s, size_t len)
 	// Try to reuse existing allocation if large enough.
 	if( m_String && len <= length())
 	{
-		std::memcpy( m_String, s, len);
+		std::memcpy( m_String.get(), s, len);
 		m_String[len] = '\0';
 		return;
 	}
