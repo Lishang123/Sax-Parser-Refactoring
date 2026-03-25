@@ -10,8 +10,6 @@
 
 XML_xerces_String::XML_xerces_String()
                  : m_Transcoder(nullptr)
-                 , m_XMLForm( nullptr )
-				 , m_LocalForm( nullptr )
 {
 
 	// If we have an input of more than 64k, this might fail badly.
@@ -23,7 +21,7 @@ XML_xerces_String::XML_xerces_String()
 }
 
 XML_xerces_String::XML_xerces_String( std::string_view localForm )
-                 : m_Transcoder( nullptr), m_XMLForm( nullptr ), m_LocalForm( nullptr)
+                 : m_Transcoder( nullptr)
 {
 
 	// If we have an input of more than 64k, this might fail badly.
@@ -37,7 +35,7 @@ XML_xerces_String::XML_xerces_String( std::string_view localForm )
 }
 
 XML_xerces_String::XML_xerces_String( const XMLCh* String)
-                 : m_Transcoder( nullptr), m_XMLForm( nullptr), m_LocalForm( nullptr)
+                 : m_Transcoder( nullptr)
 {
 	// If we have an input of more than 64k, this might fail badly.
 	xercesc::XMLTransService::Codes Result;
@@ -46,13 +44,12 @@ XML_xerces_String::XML_xerces_String( const XMLCh* String)
 		xercesc::XMLPlatformUtils::fgTransService->makeNewTranscoderFor( "utf-8", Result, 64 * 1024,
 		                                                                 xercesc::XMLPlatformUtils::fgMemoryManager);
 
-	m_XMLForm = xercesc::XMLString::replicate( String);
+	m_XMLForm.reset(xercesc::XMLString::replicate( String));
 }
 
 XML_xerces_String::XML_xerces_String(XML_xerces_String &&other) noexcept
-: m_Transcoder( other.m_Transcoder), m_XMLForm( other.m_XMLForm), m_LocalForm( std::move(other.m_LocalForm))
+: m_Transcoder( other.m_Transcoder), m_XMLForm( std::move(other.m_XMLForm)), m_LocalForm( std::move(other.m_LocalForm))
 {
-	other.m_XMLForm = nullptr;
 	other.m_Transcoder = nullptr;
 }
 
@@ -61,42 +58,34 @@ XML_xerces_String & XML_xerces_String::operator=(XML_xerces_String &&other) noex
 		return(*this);
 	}
 	// release old memory
-	xercesc::XMLString::release( &m_XMLForm);
 	delete m_Transcoder;
 
 	// steal other's resources
-	m_XMLForm = other.m_XMLForm;
+	m_XMLForm = std::move(other.m_XMLForm);
 	m_LocalForm = std::move(other.m_LocalForm);
 	m_Transcoder = other.m_Transcoder;
 
 	// remove other's pointers
-	other.m_XMLForm = nullptr;
 	other.m_Transcoder = nullptr;
 	return(*this);
 }
 
 XML_xerces_String::~XML_xerces_String()
 {
-	xercesc::XMLString::release( &m_XMLForm);
-
 	delete m_Transcoder;
 }
 
 void XML_xerces_String::setLocalForm( std::string_view localForm)
 {
     m_LocalForm.reset();
-    xercesc::XMLString::release( &m_XMLForm);
-
-	m_XMLForm = nullptr;
+	m_XMLForm.reset();
 	m_LocalForm = M::Memory::duplicateUniqueArray( localForm.data(), localForm.length() );
 }
 
 void XML_xerces_String::setXMLForm( const XMLCh* XMLForm)
 {
     m_LocalForm.reset();
-	xercesc::XMLString::release( &m_XMLForm);
-
-	m_XMLForm = xercesc::XMLString::replicate( XMLForm);
+	m_XMLForm.reset( xercesc::XMLString::replicate( XMLForm));
 }
 
 XMLCh* XML_xerces_String::convertToXMLForm( const char* LocalForm)
@@ -136,7 +125,7 @@ std::string_view XML_xerces_String::getLocalForm()
 {
 	if( !m_LocalForm && m_XMLForm )
 	{
-		m_LocalForm = M::Memory::as_unique_array_ptr(convertToLocalForm( m_XMLForm));
+		m_LocalForm = M::Memory::as_unique_array_ptr(convertToLocalForm( m_XMLForm.get()));
 	}
 
 	return m_LocalForm ? std::string_view { m_LocalForm.get() } : std::string_view{};
@@ -151,10 +140,10 @@ const XMLCh* XML_xerces_String::getXMLForm()
 			return( nullptr );
 		}
 
-		m_XMLForm =	convertToXMLForm( m_LocalForm.get());
+		m_XMLForm.reset(convertToXMLForm( m_LocalForm.get()));
 	}
 
-	return( m_XMLForm);
+	return( m_XMLForm.get());
 }
 
 int XML_xerces_String::compareNoCase( const char* LocalForm)
@@ -179,7 +168,7 @@ int XML_xerces_String::compareNoCase( const XMLCh* XMLForm)
 	if (!XMLForm) // self is not nullptr and input XML form is nullptr
 		return 1; // greater
 	
-	return( xercesc::XMLString::compareIString( m_XMLForm, XMLForm));
+	return( xercesc::XMLString::compareIString( m_XMLForm.get(), XMLForm));
 }
 
 int XML_xerces_String::compare( const char* LocalForm)
@@ -205,5 +194,5 @@ int XML_xerces_String::compare( const XMLCh* XMLForm)
 	if (!XMLForm) // self is not null and input XML form is null
 		return 1; // greater
 
-	return( xercesc::XMLString::compareString( m_XMLForm, XMLForm));
+	return( xercesc::XMLString::compareString( m_XMLForm.get(), XMLForm));
 }

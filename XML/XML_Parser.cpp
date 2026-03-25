@@ -47,15 +47,6 @@ namespace core::xml
 
 }
 
-namespace
-{
-
-    static auto transcodedDeleter = []( auto ptr ) { xercesc::XMLString::release( &ptr ); };
-    template<typename T>
-    using transcoded_ptr = std::unique_ptr<T, decltype( transcodedDeleter )>;
-
-
-} // namespace
 
 XML_Parser::XML_Parser(bool UseValidation, bool UseNamespaces, bool IgnoreXMLDeclaration)
         : m_UseNamespaces( UseNamespaces)

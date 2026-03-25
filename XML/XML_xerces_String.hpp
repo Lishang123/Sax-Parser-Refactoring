@@ -10,13 +10,21 @@
 #include <string_view>
 #include <Misc/Memory.hpp>
 
+namespace
+{
 
+    static auto transcodedDeleter = []( auto ptr ) { xercesc::XMLString::release( &ptr ); };
+    template<typename T>
+    using transcoded_ptr = std::unique_ptr<T, decltype( transcodedDeleter )>;
+
+
+} // namespace
 class XML_xerces_String
 {
 	private:
 		xercesc::XMLTranscoder* m_Transcoder;
 
-		XMLCh* m_XMLForm;
+		transcoded_ptr<XMLCh> m_XMLForm;
 		M::Memory::unique_ptr<char[]> m_LocalForm;
 
 	public:
