@@ -35,6 +35,8 @@ namespace M::Memory
 		 {
 		 	outOfMemoryHandler();
 		 }
+		// allocate template should only be used for trivial types since the object is not constructed.
+		// so if Foo* p is returned, it's dangerous because p->m_func()
 		return static_cast<ElementType*>( allocate( Count * sizeof( ElementType)));
 	}
 
