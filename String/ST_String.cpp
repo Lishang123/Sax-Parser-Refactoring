@@ -32,12 +32,8 @@ ST_String::ST_String(const ST_String& other)
 	: m_String(other.m_String
 		? duplicateUniqueString(other.c_str(), other.length())
 		: nullptr)
-{
-}
-
-ST_String::ST_String( ST_String&& other) noexcept
-    : m_String( std::move(other.m_String))
 {}
+
 
 
 ST_String& ST_String::operator=( const char* s)
@@ -64,15 +60,6 @@ ST_String& ST_String::operator=( const ST_String& rhs)
 	return( *this);
 }
 
-ST_String& ST_String::operator=( ST_String&& rhs)
- noexcept {
-	if( this != &rhs)
-	{
-		m_String = std::move(rhs.m_String);
-	}
-
-	return *this;
-}
 
 const char* ST_String::c_str() const noexcept
 {

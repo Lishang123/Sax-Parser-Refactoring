@@ -25,13 +25,13 @@ class ST_String
 		explicit ST_String( std::string_view sv );
 
 		ST_String( const ST_String& other);
-		ST_String( ST_String&& other ) noexcept;
+		ST_String( ST_String&& other ) noexcept = default;
 		~ST_String() = default;
 
 		ST_String& operator=( const char* s);
 		ST_String& operator=( std::string_view sv);
 		ST_String& operator=( const ST_String& rhs);
-		ST_String& operator=( ST_String&& rhs) noexcept ;
+		ST_String& operator=( ST_String&& rhs) noexcept = default;
 
         std::strong_ordering operator<=>( const M::String::StringType auto &rhs ) const noexcept
         {
