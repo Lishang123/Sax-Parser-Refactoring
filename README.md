@@ -1,19 +1,3 @@
-# Notes for the reviewers
-The repository includes:
-- Bug fixes 
-- Modernized C++ refactoring 
-- Refactoring of legacy components 
-- Unit tests using Catch2
-
-All the refactors to the reader are implemented in FUSimpleReader.
-Since FUSReplaceReader is really similar to FUSimpleReader and 
-a template + spec files are added later, I intentionally 
-leave FUSReplaceReader partially unmodified to preserve the original 
-for testing purposes.
-
-And the generic template is the final version after the refactoring.
-
-
 ## Build Instructions
 
 ### Build
