@@ -5,7 +5,7 @@
 #include "M_MemoryStream.hpp"
 #include "../Misc/Memory.hpp"
 
-#include <cstring>
+#include <ostream>
 
 const TY_Blob M::ConstantReadStream::m_placeholder;
 
@@ -57,6 +57,7 @@ bool IReadStream::setReadPosition( T_int64 offset, int origin )
 }
 
 } // namespace M
+//////////////////////////////////////////////////////////////////////////////////////////
 
 M_MemoryStreamFragment::M_MemoryStreamFragment( char* Content, T_uint64 Size)
     : m_Data( Content)
@@ -72,47 +73,40 @@ M_MemoryStreamFragment::M_MemoryStreamFragment( const char* Content, T_uint64 Si
 {
 	if( Size < FRAGMENT_SIZE)
 	{
-		m_Data = static_cast< char*>( M::Memory::allocate( FRAGMENT_SIZE * 2));
-		memcpy( m_Data, Content, Size);
+		m_Data = M::Memory::allocateUniqueArray<char>( FRAGMENT_SIZE * 2);
+		memcpy( m_Data.get(), Content, Size);
 		m_UsedSize = Size;
 		m_FreeSize = (FRAGMENT_SIZE * 2) - Size;
 	}
 	else
 	{
-		m_Data = static_cast< char*>( M::Memory::allocate( Size));
-		memcpy( m_Data, Content, Size);
+		m_Data = M::Memory::allocateUniqueArray<char>(  Size );
+		memcpy( m_Data.get(), Content, Size);
 		m_UsedSize = Size;
 		m_FreeSize = 0;
 	}
 }
 
 M_MemoryStreamFragment::M_MemoryStreamFragment( M_MemoryStreamFragment&& src) noexcept
-	: m_Data( src.m_Data)
+	: m_Data( std::move(src.m_Data))
 	  , m_UsedSize( src.m_UsedSize)
 	  , m_FreeSize( src.m_FreeSize)
 {
-	src.m_Data = nullptr;
 	src.m_UsedSize = 0;
 	src.m_FreeSize = 0;
 }
 
-M_MemoryStreamFragment::~M_MemoryStreamFragment()
-{
-	M::Memory::release( m_Data);
-}
+M_MemoryStreamFragment::~M_MemoryStreamFragment(){}
 
 M_MemoryStreamFragment& M_MemoryStreamFragment::operator =( M_MemoryStreamFragment&& src) noexcept {
 	// check identity
 	if (this == &src)
 		return *this;
-	// release old memory
-	M::Memory::release( m_Data);
 
-	m_Data = src.m_Data;
+	m_Data = std::move(src.m_Data);
 	m_UsedSize = src.m_UsedSize;
 	m_FreeSize = src.m_FreeSize;
 
-	src.m_Data = nullptr;
 	src.m_UsedSize = 0;
 	src.m_FreeSize = 0;
 
@@ -121,13 +115,10 @@ M_MemoryStreamFragment& M_MemoryStreamFragment::operator =( M_MemoryStreamFragme
 
 void M_MemoryStreamFragment::append( const char* Content, T_uint64 Size)
 {
-	// you should only call append if there's (enough) space, 
-	// I just do the checks to be on th safe side.
-
 	if( !m_Data)
 	{
-		m_Data = static_cast< char*>( M::Memory::allocate( Size));
-		memcpy( m_Data, Content, Size);
+		m_Data = M::Memory::allocateUniqueArray<char> (Size);
+		memcpy( m_Data.get(), Content, Size);
 		m_UsedSize = Size;
 		m_FreeSize = 0;
 	}
@@ -135,15 +126,16 @@ void M_MemoryStreamFragment::append( const char* Content, T_uint64 Size)
 	{
 		// FIXME: reallocate for every append operation?
 		// reAllocate never returns nullptr
-		m_Data = static_cast< char*>( M::Memory::reAllocate( m_Data, m_UsedSize + Size));
-		memcpy( m_Data + m_UsedSize, Content, Size);
+		m_Data = M::Memory::reAllocateUniqueArray<char>(std::move(m_Data), m_UsedSize + Size);
+		// m_Data = static_cast< char*>( M::Memory::reAllocate( m_Data, m_UsedSize + Size));
+		memcpy( m_Data.get() + m_UsedSize, Content, Size);
 		m_UsedSize += Size;
 		m_FreeSize = 0;
 	}
 	else
 	{
 		// the most efficient case
-		memcpy( m_Data + m_UsedSize, Content, Size);
+		memcpy( m_Data.get() + m_UsedSize, Content, Size);
 		m_UsedSize += Size;
 		m_FreeSize -= Size;
 	}
@@ -161,9 +153,11 @@ T_uint64 M_MemoryStreamFragment::getFreeSize() const
 
 T_uint64 M_MemoryStreamFragment::getContent( const char** Content) const
 {
-	*Content = m_Data;
+	*Content = m_Data.get();
 	return m_UsedSize;
 }
+
+//////////////////////////////////////////////////////////////////////////////////////////
 
 M_MemoryStream::M_MemoryStream()
               : m_ReadPosition( 0)
@@ -177,6 +171,8 @@ M_MemoryStream::M_MemoryStream( M_MemoryStream&& src) noexcept
 	  , m_ReadPosition( src.m_ReadPosition)
 	  , m_Size( src.m_Size)
 {
+	src.m_ReadPosition = 0;
+	src.m_Size = 0;
 }
 
 M_MemoryStream::M_MemoryStream( const char* String)
@@ -217,10 +213,10 @@ void M_MemoryStream::flush() const
 		return;
 	}
 
-	auto size = std::accumulate( m_UnflushedContent.begin(), m_UnflushedContent.end(), m_Content.getSize(),
-	                             []( T_uint64 sum, const M_MemoryStreamFragment& f) { return sum + f.getSize(); });
+	const auto size = std::accumulate( m_UnflushedContent.begin(), m_UnflushedContent.end(), m_Content.getSize(),
+	                             [](const T_uint64 sum, const M_MemoryStreamFragment& f) { return sum + f.getSize(); });
 
-	auto newContent = M::Memory::allocate<char>( size);
+	const auto newContent = M::Memory::allocate<char>( size);
 
 	const char* startContent;
 	T_uint64 startSize;
@@ -252,16 +248,24 @@ void M_MemoryStream::flush() const
 	m_Size = m_Content.getSize();
 }
 
-void M_MemoryStream::write( long Content)
+void M_MemoryStream::write_legacy( long Content)
 {
 	char buffer[21];
 	int size = snprintf( buffer, 21, "%ld", Content);
 	//write( buffer, size); (original)
 	if (size <= 0) return;
-	// just in case size > 20
+	// just in case size > 20 (should not happen since 21 is large enough for long)
 	T_uint64 sizeToWrite = static_cast<T_uint64>(std::min<int>(size, sizeof(buffer) - 1));
 
 	write( buffer, sizeToWrite);
+}
+
+void M_MemoryStream::write(long value)
+{
+	char buffer[21];
+	auto [ptr, ec] = std::to_chars(buffer, buffer + sizeof(buffer), value);
+	if (ec == std::errc())
+		write(buffer, ptr - buffer);
 }
 
 void M_MemoryStream::write(const std::string &String)
@@ -358,7 +362,7 @@ void M_MemoryStream::writeConsume( char* Content, T_uint64 Size)
 		return;
 	}
 
-	if( hasUnflushedContent() && m_lastUnflushed().getFreeSize() > Size)
+	if( hasUnflushedContent() && m_lastUnflushed().getFreeSize() >= Size)
 	{
 		m_lastUnflushed().append( Content, Size);
 		M::Memory::release( Content);
@@ -374,8 +378,8 @@ void M_MemoryStream::writeConsume( char* Content, T_uint64 Size)
 
 void M_MemoryStream::terminate()
 {
-	const char Termite[] = "";
-	write( Termite, 1L);
+	constexpr char Terminator[] = "";
+	write( Terminator, 1L);
 }
 
 void M_MemoryStream::getContent( const char** Content, T_uint64* Size) const
@@ -408,9 +412,9 @@ TY_Blob M_MemoryStream::detachContent()
 
 	m_ReadPosition = 0;
 	m_Size = 0;
-
+	// This calls the move constructor of TY_Blob.
 	TY_Blob result = std::move( m_Content);
-
+	// so calling reset here is unnecessary here because the move constructor is already clean.
 	m_Content.reset(); // like new! ;)
 
 	return result;

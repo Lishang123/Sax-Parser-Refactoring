@@ -63,9 +63,8 @@ void Reader::errorMessage( const M_SystemMessage &message )
  * @param name: The name of the element.
  * @return: The element enum defined in the reader.
  */
-Reader::Element Reader::toElement( std::string_view name )
+Reader::Element Reader::toElement(const std::string_view name )
 {
-    using Element = Reader::Element;
     auto lowerCaseName = utils::lowercaseUntilCamelBoundary( name );
 
     static constexpr std::array<std::pair<std::string_view, Element>, 4> lookup{{
@@ -86,10 +85,14 @@ Reader::Element Reader::toElement( std::string_view name )
  * @param repo the repo label for error messages
  * @return functions parsed
  */
-Functions Reader::read( const TY_Blob &data, std::string_view repo ) &&
+Functions Reader::read( const TY_Blob &data, const std::string_view repo ) && // ref-value qualifier
 {
     // stores repo label for diagnostics
     m_repository.set( repo );
+    // add these lines to prevent deliberate reuse of this function like: std::move(reader).read()
+    // m_functions.clear();
+    // m_elementStack.clear();
+    // m_currentFuncIndex = std::nullopt;
     // seeds the stack with document
     m_elementStack.push_back( Element::document );
 
@@ -161,21 +164,21 @@ bool Reader::startElementChar( const char *, const char *localName, const char *
 }
 
 /**
- * Handle character data inside <ID> and <Source> elements.
- * When parsing <ID>, a new Function object is created and its ID is set.
- * When parsing <Source>, the source text is assigned to the current Function.
- * @param text the text content. An empty string will be given if the content is empty.
- * @return true if build succeeds. <br>
- * Throws lm::duplicated_function_id for duplicate function ids. <br>
- * Throws lm::source_before_id if ID is not the first child element.
- */
+    * Handle character data inside <ID> and <Source> elements. <br>
+    * When parsing <ID>, a new Function object is created and its ID is set. <br>
+    * When parsing <Source>, the source text is assigned to the current Function. <br>
+    * @param text the text content. An empty string will be given if the content is empty.
+    * @return true if build succeeds.
+    * Throws lm::duplicated_function_id for duplicate function ids.
+    * Throws lm::source_before_id if ID is not the first child element.
+*/
 bool Reader::charactersChar( const char *, const char *, const char *, const char *text, const unsigned int )
 {
     if(const auto currentElement = m_elementStack.back(); currentElement == Element::id )
     {
         // Checks duplicate IDs against all previously read functions.
-        // Make 'function' a const reference.
-        // chars can never be nullptr, so as function.id.c_str() since it's copied from char*, so this comp is null-safe.
+        // Made 'function' a const reference.
+        // text can never be nullptr, same as function.id.c_str() since it's copied from char*, so this comp is null-safe.
         if (const auto it = std::ranges::find_if(
                                             m_functions,
                                            [text](const Function& function) { return !strcmp(text, function.id.c_str()); }

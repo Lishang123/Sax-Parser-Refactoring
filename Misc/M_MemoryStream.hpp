@@ -9,15 +9,14 @@
 #include "M_SystemMessage.hpp"
 #include <string>
 #include <deque>
-#include <variant>
 
+#include "Memory.hpp"
 
-class ST_String;
 
 class M_MemoryStreamFragment
 {
 	private:
-		char*		m_Data;
+		M::Memory::unique_ptr<char[]>	m_Data;
 		T_uint64	m_UsedSize;
 		T_uint64	m_FreeSize;
 
@@ -45,9 +44,14 @@ class M_MemoryStreamFragment
 
 		void append( const char* Content, T_uint64 Size);
 
-		T_uint64 getSize() const;
-		T_uint64 getFreeSize() const;
+		[[nodiscard]] T_uint64 getSize() const;
+		[[nodiscard]] T_uint64 getFreeSize() const;
 
+		/**
+		 * Write the data of the fragment into Content.
+		 * @param Content pointer to the buffer to be overwritten
+		 * @return the size of the data in the fragment
+		 */
 		T_uint64 getContent( const char** Content) const;
 };
 
@@ -69,13 +73,13 @@ class  IReadStream
 		  * @param content Store pointer to buffer here.
 		  * @param size Store size of buffer here.
 		  */
-		virtual void getContent( const char** content, T_uint64* size = nullptr) const = 0;
+		virtual void getContent( const char** content, T_uint64* size) const = 0;
 
 		/** Get internal buffer. */
-		virtual const TY_Blob* getContent() const = 0;
+		[[nodiscard]] virtual const TY_Blob* getContent() const = 0;
 
 		/** Return size of stream. */
-		virtual T_uint64 getSize() const = 0;
+		[[nodiscard]] virtual T_uint64 getSize() const = 0;
 
 		/** Sets the read pointer.
 		 * @param offset The new offset in the buffer. Counted from origin.
@@ -83,7 +87,7 @@ class  IReadStream
 		 * @return Whether the pointer has been reset.
 		 */
 		bool setReadPosition( T_int64 offset, int origin = SEEK_SET );
-		virtual T_uint64 getReadPosition() const = 0;
+		[[nodiscard]] virtual T_uint64 getReadPosition() const = 0;
 
 	private:
 		virtual void m_setReadPosition( T_uint64 newPos ) = 0;
@@ -96,12 +100,13 @@ class  ConstantReadStream : public M::IReadStream
 		ConstantReadStream() = delete;
 		ConstantReadStream( const TY_Blob* buffer) : m_content( buffer ? buffer : &m_placeholder), m_readPosition( 0) {}
 
-		T_uint64 read( char* Content, T_uint64 Size) const;
-		void getContent( const char** content, T_uint64* size = nullptr) const;
-		const TY_Blob* getContent() const { return m_content; }
-		T_uint64 getSize() const { return m_content ? m_content->getSize() : 0; }
+		T_uint64 read( char* Content, T_uint64 Size) const override;
+		void getContent( const char** content, T_uint64* size) const override;
+		const TY_Blob* getContent() const override { return m_content; }
+		// nullptr check is unnecessary since const m_content is never nullptr.
+		T_uint64 getSize() const override { return m_content ? m_content->getSize() : 0; }
 
-		T_uint64 getReadPosition() const;
+		T_uint64 getReadPosition() const override;
 	private:
 		const TY_Blob* m_content;
 		mutable T_uint64 m_readPosition;
@@ -118,8 +123,9 @@ class  M_MemoryStream : public M::IReadStream
 		M_MemoryStream( const M_MemoryStream& src) = delete;
 		M_MemoryStream( M_MemoryStream&& src) noexcept;
 		M_MemoryStream( const char* String);
-		M_MemoryStream( const TY_Blob* Buffer);
-		virtual ~M_MemoryStream() = default;
+		M_MemoryStream( const TY_Blob* Content);
+
+		~M_MemoryStream() override = default;
 
 		M_MemoryStream& operator =( const M_MemoryStream& src) = delete;
 		M_MemoryStream& operator =( M_MemoryStream&& src) noexcept;
@@ -146,7 +152,8 @@ class  M_MemoryStream : public M::IReadStream
 		  * @param Content Buffer to add to this stream.
 		  */
 		void write( const TY_Blob* Content);
-		void write( long Content);
+		void write_legacy( long Content);
+		void write( long value);
 		void write( const std::string& String);
 		void write( const ST_String& String);
 		void writeConsume( TY_Blob* Content);		
@@ -163,13 +170,6 @@ class  M_MemoryStream : public M::IReadStream
 		  */
 		void writeConsume( char* Content, T_uint64 Size);
 
-		/** Write a null terminated string into the stream at the given position. The null will NOT
-		  * be written into the stream, only the string content. The offset is measered in bytes,
-		  * not characters.
-		  * @param String The content to add.
-		  * @param Offset The offset of the content.
-		  */
-
 		/** Terminate the content with 0. This is necessary when M_MemoryStream is used to build
 		  * strings. */
 		void terminate();
@@ -178,13 +178,13 @@ class  M_MemoryStream : public M::IReadStream
 		  * @param Content Put stuff here.
 		  * @param Size How much you want to read.
 		  */
-		T_uint64 read( char* Content, T_uint64 Size) const;
+		T_uint64 read( char* Content, T_uint64 Size) const override;
 
 		/** Get access to internal content.
 		  * @param Content Store pointer to buffer here.
 		  * @param Size Store size of buffer here.
 		  */
-		void getContent( const char** Content, T_uint64* Size = nullptr) const;
+		void getContent( const char** Content, T_uint64* Size) const override;
 
 		/** Get ownership of internal content. The memory stream will be empty but still usable
 		  * afterwards. Make sure to remove the content with M_Memory::release().
@@ -193,33 +193,29 @@ class  M_MemoryStream : public M::IReadStream
 		  */
 		void detachContent( char** Content, T_uint64* Size = nullptr);
 		/** Get internal buffer. */
-		const TY_Blob* getContent() const;
+		const TY_Blob* getContent() const override;
 		/** Get ownership of internal content. The memory stream will be empty but still usable
 		  * afterwards. Make sure to remove the content on your own. */
 		TY_Blob detachContent();
 
-		/** Set size of stream.
-		  * @param Size New stream size.
-		  * @param Padding Value to pad with if size grows.
-		  */
 		/** Return size of stream. */
-		T_uint64 getSize() const;
+		T_uint64 getSize() const override;
 
 		/** Reset stream. */
 		void reset();
 
-        T_uint64 getReadPosition() const;
+        T_uint64 getReadPosition() const override;
 
-		bool hasUnflushedContent() { return m_UnflushedContent.size() > 0; }
+		bool hasUnflushedContent() const { return !m_UnflushedContent.empty(); }
 private:
-		typedef std::deque<M_MemoryStreamFragment> Unflusched_t;
-		mutable Unflusched_t m_UnflushedContent;
+		typedef std::deque<M_MemoryStreamFragment> Unflushed_t;
+		mutable Unflushed_t m_UnflushedContent;
 		mutable TY_Blob m_Content;
 
 		mutable T_uint64 m_ReadPosition;
 		mutable T_uint64 m_Size;
 
-		M_MemoryStreamFragment& m_lastUnflushed() { return m_UnflushedContent.back(); }
+		M_MemoryStreamFragment& m_lastUnflushed() const { return m_UnflushedContent.back(); }
 		void m_setReadPosition( T_uint64 newPos ) override;
 };
 

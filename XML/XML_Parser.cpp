@@ -32,7 +32,7 @@ namespace core::xml
         {
             const char* content {};
             auto size { m_content.getSize() };
-            m_content.getContent(&content);
+            m_content.getContent(&content, nullptr);
             return new(getMemoryManager()) xercesc::BinMemInputStream {
                     reinterpret_cast<const XMLByte*>( content ),
                     size,
@@ -47,15 +47,6 @@ namespace core::xml
 
 }
 
-namespace
-{
-
-    static auto transcodedDeleter = []( auto ptr ) { xercesc::XMLString::release( &ptr ); };
-    template<typename T>
-    using transcoded_ptr = std::unique_ptr<T, decltype( transcodedDeleter )>;
-
-
-} // namespace
 
 XML_Parser::XML_Parser(bool UseValidation, bool UseNamespaces, bool IgnoreXMLDeclaration)
         : m_UseNamespaces( UseNamespaces)
@@ -234,6 +225,7 @@ const char* XML_Parser::m_RemoveXMLDeclaration( const char *Buffer, size_t Buffe
         {
             NoWhitespaceBuffer += 5;
             // scan until "?>" is found
+            // legacy code: while( BufferSize >= 2 && NoWhitespaceBuffer[0] != '?' && NoWhitespaceBuffer[1] != '>')
             while(BufferSize >= 2 && !(NoWhitespaceBuffer[0] == '?' && NoWhitespaceBuffer[1] == '>'))
             {
                 ++NoWhitespaceBuffer;
@@ -265,14 +257,14 @@ void XML_Parser::startElement( const XMLCh* const URI, const XMLCh* const Name,
     LocalName.consume( m_UseNamespaces
                        ? m_xercesString.convertToLocalForm( Name )
                        // ST_String guarantees NUL termination
-                       // duplicate copies to size + 1 and ensures NUL termination
+                       // duplicate copies to size + 1 and ensures NUL termination so no need for passing strlen()+1
                        : M::Memory::duplicate( LocalQName.c_str(), strlen( LocalQName.c_str() ) ) );
 
 
     endCharacters( );
 
 
-    m_Callstack.push_back( { std::move( LocalURI ), std::move( LocalName ), std::move( LocalQName ) });
+    m_Callstack.emplace_back( std::move( LocalURI ), std::move( LocalName ), std::move( LocalQName ) );
 
 
     auto& el = m_Callstack.back();
@@ -315,7 +307,6 @@ void XML_Parser::characters(const XMLCh* const Characters, const XMLSize_t Lengt
     // Length is not used?
     char* LocalCharacters = m_xercesString.convertToLocalForm( Characters);
 
-    // TODO: XML character data cannot contain '\0' in XML 1.0, otherwise I have to make sure.
     m_CharacterBuffer.writeConsume( LocalCharacters);
 }
 
@@ -453,7 +444,7 @@ M_SystemMessage XML_Parser::systemMessageFromException( const xercesc::SAXParseE
     }
     Location.terminate();
     const char* LocationString;
-    Location.getContent( &LocationString);
+    Location.getContent( &LocationString, nullptr);
 
     return M_SystemMessage {
             "XMLLM_DOMAIN", Code,

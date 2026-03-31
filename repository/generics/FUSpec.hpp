@@ -25,7 +25,7 @@ concept FUSpec = requires(
     { Spec::isKnown(element) } -> std::same_as<bool>;
     { Spec::elementName(element) } -> std::same_as<std::string_view>;
 
-    { Spec::allowedChildren(parentElement)} -> std::same_as<std::span<typename Spec::Element>>;
+    { Spec::allowedChildren(parentElement)} -> std::same_as<std::span<const typename Spec::Element>>;
     { Spec::onText(element, text, out, state, repo) } -> std::same_as<void>;
 
     //for sax parsers in general

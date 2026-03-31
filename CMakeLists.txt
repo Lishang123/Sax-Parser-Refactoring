@@ -17,6 +17,7 @@ set(Sources
         ./repository/utils.cpp
         ./repository/FUSimpleReader.cpp
         ./repository/FUSReplaceReader.cpp
+        ./tests/XercesGuard.cpp
 )
 
 add_library(parser STATIC ${Sources})
@@ -24,6 +25,25 @@ add_library(parser STATIC ${Sources})
 target_include_directories(parser
         PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}
+)
+
+target_sources(parser PRIVATE
+        Misc/M_SystemMessage.hpp
+        Misc/SystemMessageError.hpp
+        Misc/M_MemoryStream.hpp
+        Misc/Memory.hpp
+        repository/utils.hpp
+        repository/FUSimpleReader.hpp
+        repository/FUSReplaceReader.hpp
+        repository/generics/FUSpec.hpp
+        repository/generics/FUSReader.hpp
+        repository/specs/SimpleSpec.hpp
+        repository/specs/ReplaceSpec.hpp
+        String/generic.hpp
+        String/ST_String.hpp
+        tests/XercesGuard.hpp
+        Types/TY_Base.hpp
+        Types/TY_Blob.hpp
 )
 
 target_compile_options(parser PRIVATE -fsanitize=address -fno-omit-frame-pointer)
@@ -41,7 +61,7 @@ FetchContent_MakeAvailable(Catch2)
 FetchContent_Declare(
         fmt
         GIT_REPOSITORY https://github.com/fmtlib/fmt.git
-        GIT_TAG master
+        GIT_TAG 12.1.0
 )
 
 FetchContent_MakeAvailable(fmt)

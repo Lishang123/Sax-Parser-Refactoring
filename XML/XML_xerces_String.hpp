@@ -8,28 +8,37 @@
 #include <xercesc/util/TransService.hpp>
 #include <xercesc/util/XMLString.hpp>
 #include <string_view>
+#include <Misc/Memory.hpp>
+
+namespace
+{
+
+    static auto transcodedDeleter = []( auto ptr ) { xercesc::XMLString::release( &ptr ); };
+    template<typename T>
+    using transcoded_ptr = std::unique_ptr<T, decltype( transcodedDeleter )>;
 
 
+} // namespace
 class XML_xerces_String
 {
 	private:
-		xercesc::XMLTranscoder* m_Transcoder;
+		std::unique_ptr<xercesc::XMLTranscoder> m_Transcoder;
 
-		XMLCh* m_XMLForm;
-		char* m_LocalForm;
+		transcoded_ptr<XMLCh> m_XMLForm;
+		M::Memory::unique_ptr<char[]> m_LocalForm;
 
 	public:
 		XML_xerces_String();
 		explicit XML_xerces_String( std::string_view localForm );
 		explicit XML_xerces_String( const XMLCh* XMLForm );
-
+		// prevent double free/ double delete problem for shallow copying in generated copy constructor
 		XML_xerces_String(XML_xerces_String const&) = delete;
-		XML_xerces_String(XML_xerces_String&& other) noexcept;
+		XML_xerces_String(XML_xerces_String&& other) noexcept = default;
 
 		XML_xerces_String& operator=(XML_xerces_String const&) = delete;
-		XML_xerces_String& operator=(XML_xerces_String&& other) noexcept;
+		XML_xerces_String& operator=(XML_xerces_String&& other) noexcept = default;
 
-		virtual ~XML_xerces_String();
+		virtual ~XML_xerces_String() = default;
 
 		/** Set local form.
 		  * @param localForm The string in local form.

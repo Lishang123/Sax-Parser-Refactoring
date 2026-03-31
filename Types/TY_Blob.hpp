@@ -15,7 +15,10 @@ namespace ptr
     template<class C>
     struct release_deleter
     {
-        void operator()( C *cpx ) { cpx->release(); };
+        void operator()( C *cpx ) const noexcept {
+	        if (cpx)
+        		cpx->release();
+        };
     };
 
 } // namespace ptr
@@ -30,7 +33,9 @@ class  TY_Blob final : public TY_Base
 		void* m_content;
 
 	public:
-		using ptr = std::unique_ptr<TY_Blob, ptr::release_deleter<TY_Blob>>;
+		// usage: TY_Blob::ptr b{ TY_Blob::create(...) };
+		// because of the deleter, never use this pointer with TY_Blob created on the stack!!
+		using Ptr = std::unique_ptr<TY_Blob, ptr::release_deleter<TY_Blob>>;
 
 		TY_Blob();
 		TY_Blob( const TY_Blob& content);
@@ -65,7 +70,7 @@ class  TY_Blob final : public TY_Base
 		  */
 		void getContent( const char** content, T_uint64* size) const;
 		/** Get ownership of internal buffer. The blob will be empty but still usable afterwards.
-		  * Make sure to remove the buffer with M_Memory::release().
+		  * Make sure to remove the buffer with M::Memory::release().
 		  * @param content Store pointer to content here. May be NULL.
 		  * @param size Store pointer to size of content here. May be NULL.
 		  */
@@ -76,7 +81,8 @@ class  TY_Blob final : public TY_Base
 		  * @param size Copy this number of bytes.
 		  */
 		T_uint64 copyContent( char* buffer, T_uint64 offset, T_uint64 size) const;
-		/** Set new content. This makes a copy of the new content.
+		/** Set new content. This makes a copy of the new content. The terminating 0 will
+		  * not be copied.
 		  * @param content New content.
 		  */
 		void setContent( const char* content);
@@ -84,8 +90,7 @@ class  TY_Blob final : public TY_Base
 		  * @param content New content.
 		  */
 		void setContent( const TY_Blob* content);
-		/** Set new content and size. This makes a copy of the new content. The terminating 0 will
-		  * not be copied.
+		/** Set new content and size. This makes a copy of the new content.
 		  * @param content New content.
 		  * @param size Size of new content.
 		  */
@@ -96,19 +101,19 @@ class  TY_Blob final : public TY_Base
 		  * allocated via M::Memory.
 		  * @param content New content.
 		  * @param size Size of new content.
-		  * @param consume Signals whether a copy should be made.
+		  * @param adopt Signals whether a copy should be made.
 		  */
-		void setContent( void* content, T_uint64 size, bool consume);
+		void setContent( void* content, T_uint64 size, bool adopt);
 
 		/** Get pointer to content, be aware that this buffer may not be 0-terminated! */
-		const char* getContent() const;
+		[[nodiscard]] const char* getContent() const;
 		/** Set content size.
 		  * @param size New content size.
 		  */
 		void setSize( T_uint64 size, char padding = ' ');
 		/** Get content size. */
-		T_uint64 getSize() const;
-		bool isEmpty() const { return getSize() == 0; }
+		[[nodiscard]] T_uint64 getSize() const;
+		[[nodiscard]] bool isEmpty() const { return getSize() == 0; }
 
 		/** Reset content. */
 		void reset();
