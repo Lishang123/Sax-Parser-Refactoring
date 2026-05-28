@@ -12,4 +12,3 @@ cmake --build build --target unit_tests --parallel
 ./build/tests/unit_tests
 ```
 
----------
