@@ -10,15 +10,15 @@ add_executable(unit_tests
         test_TY_Blob.cpp
         test_XML_Parser.cpp
 )
-
-target_compile_options(unit_tests PRIVATE
-        -fsanitize=address
-        -fno-omit-frame-pointer
-)
-
-target_link_options(unit_tests PRIVATE
-        -fsanitize=address
-)
+#
+#target_compile_options(unit_tests PRIVATE
+#        -fsanitize=address
+#        -fno-omit-frame-pointer
+#)
+#
+#target_link_options(unit_tests PRIVATE
+#        -fsanitize=address
+#)
 
 target_link_libraries(unit_tests PRIVATE
         parser
@@ -28,5 +28,7 @@ target_link_libraries(unit_tests PRIVATE
 target_compile_definitions(unit_tests PRIVATE
         PROJECT_SOURCE_DIR="${CMAKE_SOURCE_DIR}"
 )
-
-add_test(NAME unit_tests COMMAND unit_tests)
+include(Catch)
+catch_discover_tests(unit_tests
+        TEST_PREFIX "SaxParser."
+)

@@ -46,17 +46,10 @@ target_sources(parser PRIVATE
         Types/TY_Blob.hpp
 )
 
-target_compile_options(parser PRIVATE -fsanitize=address -fno-omit-frame-pointer)
-target_link_options(parser PRIVATE -fsanitize=address)
+#target_compile_options(parser PRIVATE -fsanitize=address -fno-omit-frame-pointer)
+#target_link_options(parser PRIVATE -fsanitize=address)
 
 include(FetchContent)
-
-FetchContent_Declare(
-        Catch2
-        GIT_REPOSITORY https://github.com/catchorg/Catch2.git
-        GIT_TAG v3.5.0
-)
-FetchContent_MakeAvailable(Catch2)
 
 FetchContent_Declare(
         fmt
@@ -83,5 +76,13 @@ target_link_libraries(parser PUBLIC xerces-c fmt::fmt)
 include(CTest)
 
 if (BUILD_TESTING)
+
+    FetchContent_Declare(
+            Catch2
+            GIT_REPOSITORY https://github.com/catchorg/Catch2.git
+            GIT_TAG v3.5.0
+    )
+    FetchContent_MakeAvailable(Catch2)
+
     add_subdirectory(tests)
 endif()
