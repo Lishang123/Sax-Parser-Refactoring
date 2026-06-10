@@ -46,6 +46,7 @@ target_sources(parser PRIVATE
         Types/TY_Blob.hpp
 )
 
+# extremely slow on Xerces
 #target_compile_options(parser PRIVATE -fsanitize=address -fno-omit-frame-pointer)
 #target_link_options(parser PRIVATE -fsanitize=address)
 

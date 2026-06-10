@@ -10,7 +10,8 @@ add_executable(unit_tests
         test_TY_Blob.cpp
         test_XML_Parser.cpp
 )
-#
+
+# extremely slow on Xerces
 #target_compile_options(unit_tests PRIVATE
 #        -fsanitize=address
 #        -fno-omit-frame-pointer
@@ -29,6 +30,8 @@ target_compile_definitions(unit_tests PRIVATE
         PROJECT_SOURCE_DIR="${CMAKE_SOURCE_DIR}"
 )
 include(Catch)
+
+# Add a custom prefix to avoid running Xerces tests.
 catch_discover_tests(unit_tests
         TEST_PREFIX "SaxParser."
 )
