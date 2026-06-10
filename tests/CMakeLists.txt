@@ -26,6 +26,7 @@ target_link_libraries(unit_tests PRIVATE
         Catch2::Catch2WithMain
 )
 
+# Add a custom Macro to be used in tests
 target_compile_definitions(unit_tests PRIVATE
         PROJECT_SOURCE_DIR="${CMAKE_SOURCE_DIR}"
 )
