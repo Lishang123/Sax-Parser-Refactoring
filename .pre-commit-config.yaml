@@ -17,6 +17,7 @@ repos:
     rev: v20.1.8
     hooks:
       - id: clang-format
+        # args: ['-i'] # no need, -i is already used by default on this version
         files: \.(cpp|cc|cxx|hpp|h)$
 
   # ------------------------------------------------------------
