@@ -5,22 +5,19 @@
 
 class TY_Blob;
 
+namespace functions::repository::replace {
+struct Function {
+  ST_String id;
+  ST_String source;
+  ST_String pattern;
+  ST_String replacement;
+};
 
-namespace functions::repository::replace
-{
-    struct Function
-    {
-        ST_String id;
-        ST_String source;
-        ST_String pattern;
-        ST_String replacement;
-    };
+using Functions = std::vector<Function>;
 
-    using Functions = std::vector<Function>;
+Functions readRepo_legacy(const TY_Blob &data, std::string_view repo);
+Functions readRepo(const TY_Blob &data, std::string_view repo);
 
-    Functions  readRepo_legacy( const TY_Blob &data, std::string_view repo );
-    Functions  readRepo( const TY_Blob &data, std::string_view repo );
+} // namespace functions::repository::replace
 
-}//namespace functions::repository::fus::replace
-
-#endif //E2ERUNTIME_FUSREPLACEREADER_HPP
+#endif // E2ERUNTIME_FUSREPLACEREADER_HPP

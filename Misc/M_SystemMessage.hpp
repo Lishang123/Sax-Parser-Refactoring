@@ -1,22 +1,22 @@
 #ifndef CPP_TASK_M_SYSTEMMESSAGE_HPP
 #define CPP_TASK_M_SYSTEMMESSAGE_HPP
 
-//Simplified version of M_SystemMessage
+// Simplified version of M_SystemMessage
 
 #include "../String/ST_String.hpp"
 
-class M_SystemMessage
-{
+class M_SystemMessage {
 private:
-    ST_String m_Domain;
-    ST_String m_Code;
-    ST_String m_Description;
+  ST_String m_Domain;
+  ST_String m_Code;
+  ST_String m_Description;
 
 public:
-    explicit M_SystemMessage( std::string_view domain, std::string_view code, std::string_view description );
-    [[nodiscard]] const char* getDomain() const;
-    [[nodiscard]] const char* getCode() const;
-    [[nodiscard]] const char* getDescription() const;
+  explicit M_SystemMessage(std::string_view domain, std::string_view code,
+                           std::string_view description);
+  [[nodiscard]] const char *getDomain() const;
+  [[nodiscard]] const char *getCode() const;
+  [[nodiscard]] const char *getDescription() const;
 };
 
-#endif //CPP_TASK_M_SYSTEMMESSAGE_HPP
+#endif // CPP_TASK_M_SYSTEMMESSAGE_HPP

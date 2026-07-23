@@ -5,13 +5,11 @@
 
 #include <cstddef>
 
-class TY_Base
-{
+class TY_Base {
 
-	public:
-		void* operator new( size_t Size);
-		void operator delete( void* Old) noexcept;
-
+public:
+  void *operator new(size_t Size);
+  void operator delete(void *Old) noexcept;
 };
 
 #endif

@@ -13,117 +13,79 @@ using namespace M::String;
 
 static constexpr size_t npos = static_cast<size_t>(-1);
 
-ST_String::ST_String( const char* s, size_t len)
-    : m_String( duplicateUniqueString(s, len ) )
-{
+ST_String::ST_String(const char *s, size_t len)
+    : m_String(duplicateUniqueString(s, len)) {}
+
+ST_String::ST_String(std::string_view sv)
+    : m_String(duplicateUniqueString(sv.data(), sv.size())) {}
+
+ST_String::ST_String(const char *s)
+    : m_String(s ? duplicateUniqueString(s, strlen(s)) : nullptr) {}
+
+ST_String::ST_String(const ST_String &other)
+    : m_String(other.m_String
+                   ? duplicateUniqueString(other.c_str(), other.length())
+                   : nullptr) {}
+
+ST_String &ST_String::operator=(const char *s) {
+  set(s);
+
+  return (*this);
 }
 
-ST_String::ST_String( std::string_view sv )
-    : m_String( duplicateUniqueString( sv.data(), sv.size() ) )
-{
+ST_String &ST_String::operator=(std::string_view sv) {
+  set(sv);
+  return *this;
 }
 
-ST_String::ST_String( const char* s)
-    : m_String( s ? duplicateUniqueString( s, strlen(s)) : nullptr )
-{
+ST_String &ST_String::operator=(const ST_String &rhs) {
+  if (this != &rhs) {
+    assert(!m_String || m_String != rhs.m_String);
+    set(rhs.m_String.get());
+  }
+
+  return (*this);
 }
 
-ST_String::ST_String(const ST_String& other)
-	: m_String(other.m_String
-		? duplicateUniqueString(other.c_str(), other.length())
-		: nullptr)
-{}
+const char *ST_String::c_str() const noexcept { return m_String.get(); }
 
-
-
-ST_String& ST_String::operator=( const char* s)
-{
-	set( s);
-
-	return( *this);
+std::string_view ST_String::view() const noexcept {
+  return m_String ? std::string_view{m_String.get()} : std::string_view{};
 }
 
-ST_String& ST_String::operator=( std::string_view sv)
-{
-	set( sv);
-	return *this;
+bool ST_String::isEmpty() const {
+  return m_String == nullptr || m_String[0] == '\0';
 }
 
-ST_String& ST_String::operator=( const ST_String& rhs)
-{
-	if( this != &rhs)
-	{
-		assert( !m_String || m_String != rhs.m_String);
-		set( rhs.m_String.get());
-	}
-
-	return( *this);
+size_t ST_String::length() const {
+  return m_String ? strlen(m_String.get()) : 0;
 }
 
+void ST_String::reset() { m_String.reset(); }
 
-const char* ST_String::c_str() const noexcept
-{
-	return m_String.get();
+void ST_String::consume(char *s) { m_String.reset(s); }
+
+void ST_String::set(const char *s) { set(s, npos); }
+
+void ST_String::set(std::string_view sv) { set(sv.data(), sv.size()); }
+
+void ST_String::set(const char *s, size_t len) {
+  // Since memory allocation is generally costly, try to reuse current
+  // allocation. Because we don't store size, we use current length as indicator
+  // if reuse is possible.
+  if (!s) {
+    reset();
+    return;
+  }
+  if (len == npos) {
+    len = strlen(s);
+  }
+  // Try to reuse existing allocation if large enough.
+  if (m_String && len <= length()) {
+    std::memcpy(m_String.get(), s, len);
+    m_String[len] = '\0';
+    return;
+  }
+  // Allocate new memory otherwise
+  m_String = duplicateUniqueArray(s, len);
 }
-
-std::string_view ST_String::view() const noexcept
-{
-	return m_String ? std::string_view{m_String.get()} : std::string_view{};
-}
-
-bool ST_String::isEmpty() const
-{
-	return m_String == nullptr || m_String[0] == '\0';
-}
-
-size_t ST_String::length() const
-{
-	return m_String ? strlen( m_String.get()) : 0;
-}
-
-void ST_String::reset()
-{
-    m_String.reset();
-}
-
-void ST_String::consume( char* s)
-{
-    m_String.reset( s);
-}
-
-void ST_String::set( const char* s)
-{
-	set( s, npos);
-}
-
-void ST_String::set( std::string_view sv )
-{
-	set( sv.data(), sv.size() );
-}
-
-void ST_String::set( const char* s, size_t len)
-{
-	// Since memory allocation is generally costly, try to reuse current allocation.
-	// Because we don't store size, we use current length as indicator if reuse is possible.
-    if( !s )
-    {
-        reset();
-        return;
-    }
-	if( len == npos )
-	{
-		len = strlen( s);
-	}
-	// Try to reuse existing allocation if large enough.
-	if( m_String && len <= length())
-	{
-		std::memcpy( m_String.get(), s, len);
-		m_String[len] = '\0';
-		return;
-	}
-	// Allocate new memory otherwise
-	m_String = duplicateUniqueArray(s, len);
-}
-
-
-

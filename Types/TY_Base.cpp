@@ -2,16 +2,8 @@
 
 #include "TY_Base.hpp"
 
-
 #include "../Misc/Memory.hpp"
 
-void* TY_Base::operator new( size_t Size)
-{
-	return M::Memory::allocate( Size );
-}
+void *TY_Base::operator new(size_t Size) { return M::Memory::allocate(Size); }
 
-void TY_Base::operator delete( void* Old) noexcept
-{
-	M::Memory::release( Old);
-}
-
+void TY_Base::operator delete(void *Old) noexcept { M::Memory::release(Old); }
