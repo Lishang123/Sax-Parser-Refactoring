@@ -9,7 +9,5 @@ cmake --build build --target unit_tests --parallel
 
 ### Run Tests
 ```bash
-cd build 
-ctest -R ^SaxParser\\.
+ctest -R "^SaxParser\." --test-dir build
 ```
-
