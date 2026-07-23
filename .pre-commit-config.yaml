@@ -32,7 +32,7 @@ repos:
       - id: build
         name: Build project
         language: system
-        entry: cmake --build build --parallel
+        entry: cmake --build build --parallel # assuming the project is already configured
         pass_filenames: false
       - id: tests
         name: Unit tests
