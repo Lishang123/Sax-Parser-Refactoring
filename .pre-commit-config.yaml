@@ -1,0 +1,41 @@
+repos:
+  # ------------------------------------------------------------
+  # Generic checks
+  # ------------------------------------------------------------
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: check-added-large-files
+      - id: check-merge-conflict
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+
+  # ------------------------------------------------------------
+  # clang-format
+  # ------------------------------------------------------------
+  - repo: https://github.com/pre-commit/mirrors-clang-format
+    rev: v20.1.8
+    hooks:
+      - id: clang-format
+        files: \.(cpp|cc|cxx|hpp|h)$
+
+  # ------------------------------------------------------------
+  # Local hooks
+  # ------------------------------------------------------------
+  - repo: local
+    hooks:
+#      - id: clang-tidy
+#        name: clang-tidy
+#        language: system
+#        entry: ./scripts/run-clang-tidy.sh
+#        pass_filenames: false
+      - id: build
+        name: Build project
+        language: system
+        entry: cmake --build build --parallel
+        pass_filenames: false
+      - id: tests
+        name: Unit tests
+        language: system
+        entry: ctest -R "^SaxParser\." --test-dir build --output-on-failure
+        pass_filenames: false
