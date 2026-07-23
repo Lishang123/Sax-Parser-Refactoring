@@ -3,7 +3,7 @@
 ### Build
 
 ```bash
-cmake -S . -B build -G Ninja
+cmake -S . -B build
 cmake --build build --target unit_tests --parallel
 ```
 
